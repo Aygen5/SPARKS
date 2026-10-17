@@ -10,6 +10,7 @@ import 'package:sparks/features/catalog/data/datasources/product_local_data_sour
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
+import 'package:sparks/features/favorites/presentation/manager/favorites_manager.dart';
 
 /// SPARKS Ürün Detay Sayfası (ProductDetailScreen).
 ///
@@ -26,6 +27,7 @@ class ProductDetailScreen extends StatefulWidget {
     super.key,
     required this.productId,
     this.repository,
+    this.favoritesManager,
     this.isFavoriteInitial = false,
     this.onFavoriteToggle,
   });
@@ -35,6 +37,9 @@ class ProductDetailScreen extends StatefulWidget {
 
   /// Test edilebilirlik ve bağımsızlık için enjekte edilebilir ürün repository'si
   final ProductRepository? repository;
+
+  /// Test edilebilirlik ve durum yönetimi için merkezi favori yöneticisi
+  final FavoritesManager? favoritesManager;
 
   /// Başlangıç favori durumu (opsiyonel)
   final bool isFavoriteInitial;
@@ -48,23 +53,42 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late final ProductRepository _repository;
+  late final FavoritesManager _favoritesManager;
   Product? _product;
   bool _isLoading = true;
   String? _errorMessage;
   int _activeImageIndex = 0;
   int _selectedTab = 0; // 0: Açıklama, 1: Malzemeler
-  late bool _isFavorite;
+
+  bool get _isFavorite => _favoritesManager.isFavorite(widget.productId);
 
   @override
   void initState() {
     super.initState();
-    _isFavorite = widget.isFavoriteInitial;
+    _favoritesManager = widget.favoritesManager ?? FavoritesManager.instance;
+    if (widget.isFavoriteInitial) {
+      _favoritesManager.addFavorite(widget.productId);
+    }
+    _favoritesManager.addListener(_onFavoritesChanged);
+
     _repository =
         widget.repository ??
         ProductRepositoryImpl(
           localDataSource: const ProductLocalDataSourceImpl(),
         );
     _loadProduct();
+  }
+
+  @override
+  void dispose() {
+    _favoritesManager.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   /// Ürün detay verisini repository üzerinden asenkron yükler
@@ -96,17 +120,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   /// Favori durumunu değiştirir
-  void _toggleFavorite() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
-    widget.onFavoriteToggle?.call(_isFavorite);
+  Future<void> _toggleFavorite() async {
+    final newState = await _favoritesManager.toggleFavorite(widget.productId);
+    widget.onFavoriteToggle?.call(newState);
   }
 
   /// Renk ve referans kodunu panoya kopyalar ve kullanıcıyı SnackBar ile bilgilendirir
   Future<void> _copyColorAndCode() async {
     if (_product == null) return;
-    await Clipboard.setData(ClipboardData(text: _product!.colorAndCode));
+    try {
+      await Clipboard.setData(ClipboardData(text: _product!.colorAndCode));
+    } catch (_) {
+      // Platform ve izin kısıtlarında hata yakalanır
+    }
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(

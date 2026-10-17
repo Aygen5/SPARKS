@@ -193,5 +193,43 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
 - **Arama Alanı:** Alt çizgili minimalist `TextField` (`NE ARIYORSUNUZ?`), anlık `_onSearchInputChanged` dinleyicisi.
 - **Kapsam:** `ProductRepository.searchProducts` metodu üzerinden başlık, kategori, renk/kod ve açıklamada anlık arama.
 - **Önerilen Ürünler:** Arama kutusu boşken `İLGİNİZİ ÇEKEBİLECEK DİĞER ÜRÜNLER` başlığı altında ilgili reyonun ilk 2 ürünü listelenir.
-- **Geçiş Noktası:** Katalog veya arama ekranında bir ürüne dokunulduğunda `/product/:id` rotasına gidilir; Aşama 6 kapsamında `ProductDetailPlaceholderScreen` ürün kimliğini güvenle taşır.
+- **Geçiş Noktası:** Katalog veya arama ekranında bir ürüne dokunulduğunda `/product/:id` rotasına gidilir; ürün kimliği GoRouter üzerinden `ProductDetailScreen` bileşenine aktarılır.
+
+---
+
+## 8. Ürün Detay Sayfası ve Merkezi Favoriler Mimarisi (Aşama 7)
+
+### 8.1. Ürün Detay Sayfası (`ProductDetailScreen`)
+- **Veri Akışı:**
+  `ProductDetailScreen -> ProductRepository.getProductById(id) -> ProductLocalDataSource -> assets/data/products.json`
+- **Asenkron Yaşam Döngüsü ve Durumlar:**
+  - `initState()`: `_loadProduct()` asenkron çağrısı başlatılır; `FavoritesManager` dinleyicisi (`addListener`) eklenir.
+  - `dispose()`: `FavoritesManager` dinleyicisi güvenle temizlenir (`removeListener`).
+  - Yüklenme: Editoryal minimalist spinner (`CircularProgressIndicator`).
+  - Bulunamadı / Hata: Kullanıcı dostu `ÜRÜN BULUNAMADI` mesajı ve `TEKRAR DENE` aksiyon butonu.
+- **Editoryal Görsel Galerisi:**
+  - 3:4 aspect ratio editoryal görsel yerleşimi.
+  - `PageView.builder` ile iki görsel arasında yatay kaydırma.
+  - Sağ altta keskin siyah zeminli `"1/2"` ve `"2/2"` sayfa indikatörü.
+- **Fiyat ve İndirim:**
+  - İndirimli ürünlerde güncel fiyat (kalın beyaz), eski fiyat (üstü çizili gri) ve beyaz indirim rozeti (örn: `-%15`).
+  - İndirimsiz ürünlerde yalnızca güncel satış fiyatı.
+- **Renk ve Referans Kodu Kopyalama:**
+  - `product.colorAndCode` alanı yanında kopyalama butonu.
+  - `Clipboard.setData` ile panoya yazma ve kullanıcıya editoryal SnackBar (`"Renk ve ürün kodu kopyalandı"`) bildirimi.
+- **Editoryal Sekmeler (`AÇIKLAMA` / `MALZEMELER`):**
+  - Başlangıçta varsayılan olarak `AÇIKLAMA` sekmesi aktiftir (`product.description`).
+  - `MALZEMELER` sekmesine basıldığında kumaş/astar bileşimi gösterilir (`product.materials`).
+- **Stok Durumu ve Aksiyon Butonu:**
+  - `isOutOfStock == true`: Buton pasifleşir, arka plan kararır ve `TÜKENDİ` yazar.
+  - `isOutOfStock == false`: Keskin beyaz `SEPETE EKLE` butonu; Aşama 8'e hazırlık olarak bilgilendirici SnackBar sunar.
+
+### 8.2. Merkezi Favori Mimarisi ve Kalıcılık
+- **Prensip:** Yalnızca ürün kimlikleri (`Set<String>`) saklanır; ürün varlıkları veya fiyatlar favorilerde çoğaltılmaz.
+- **Katmanlar:**
+  1. `FavoritesLocalDataSource` (`lib/features/favorites/data/datasources/`): `SharedPreferences` üzerinden JSON/StringList tabanlı yerel okuma ve yazma. Testler için `InMemoryFavoritesLocalDataSource` çifti.
+  2. `FavoritesRepository` (`lib/features/favorites/domain/repositories/`): Sözleşme arayüzü; `getFavoriteIds`, `isFavorite`, `addFavorite`, `removeFavorite`, `toggleFavorite`, `clear`.
+  3. `FavoritesRepositoryImpl` (`lib/features/favorites/data/repositories/`): Somut repository; `Set<String>` ile duplikasyonu fiziksel olarak önler, önbellekleme yapar ve yerel veri kaynağına yazar.
+  4. `FavoritesManager` (`lib/features/favorites/presentation/manager/`): `ChangeNotifier` tabanlı merkezi durum yöneticisi. Ekranlar `addListener` ile favori değişikliklerine abone olur; kalp butonu anlık olarak `Icons.favorite` / `Icons.favorite_border` arasında geçiş yapar.
+
 

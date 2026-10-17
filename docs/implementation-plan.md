@@ -42,18 +42,17 @@
 
 ---
 
-## Aşama 2 — Tam Ekran Editoryal Açılış Ekranı (Splash Screen)
+## Aşama 2 — Tam Ekran Editoryal Açılış Ekranı (Splash Screen) (TAMAMLANDI)
 - **Amaç:** Zara ilhamlı tam ekran fotoğraflı, yavaş zoom animasyonlu ve dev serif logolu açılış ekranını oluşturmak.
-- **Ön Koşullar:** Aşama 1 onayı.
-- **Yapılacak İşler:**
-  - Arka planda 1200x2141 px sıcak tonlu editoryal moda fotoğrafı ve alttan koyulaşan gradient yerleşimi.
-  - 1.0'dan 1.06'ya 6 saniyelik yavaş büyüme animasyonu.
-  - Soldan sağa kayarak beliren büyük `SPARKS` serif logosu.
-  - İnce çerçeveli yarı saydam / buzlu cam efektli "Koleksiyonu Keşfet" butonu.
-  - Butona tıklandığında `MainScaffold`'a yumuşak fade geçişi.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/splash/presentation/splash_screen.dart`, `lib/app/router/app_router.dart`.
-- **Test Yöntemi:** Animasyon ve navigasyon widget testleri.
-- **Tamamlanma Ölçütü:** Açılış ekranı tam ekran sorunsuz açılır, animasyonlar akıcı çalışır ve butona basınca ana iskelete geçer.
+- **Ön Koşullar:** Aşama 1 onayı (Sağlandı).
+- **Tamamlanan İşler:**
+  - `lib/features/splash/presentation/splash_screen.dart`: Tam ekran editoryal moda fotoğrafı, alttan koyulaşan degrade katmanı, 1.0'dan 1.06'ya 6 saniyelik yavaş zoom animasyonu, soldan sağa kayan dev Playfair Display `SPARKS` logosu ve buzlu cam (glassmorphic) efektli keskin köşeli "Koleksiyonu Keşfet" butonu geliştirildi.
+  - `lib/app/router/app_router.dart`: `AppRoutes.splash` (`/`) başlangıç rotası yapıldı, `AppRoutes.home` (`/home`) rotasına CustomTransitionPage ile yumuşak fade geçiş efekti entegre edildi.
+  - `test/widget_test.dart`: Açılış ekranının açılması, logo/buton görünürlüğü, yumuşak geçiş yönlendirmesi ve dar ekran (360x640) taşma denetimi için 8 test yazıldı ve doğrulandı.
+  - Git & GitHub: `aygenyildirim27@gmail.com` kimliği yapılandırıldı, `feature/stage-2-editorial-splash` branch'i açıldı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/splash/presentation/splash_screen.dart`, `lib/app/router/app_router.dart`, `test/widget_test.dart`, `docs/implementation-plan.md`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (8 testin 8'i başarılı).
+- **Tamamlanma Ölçütü:** Açılış ekranı tam ekran sorunsuz açılır, animasyonlar akıcı çalışır ve butona basınca yumuşak fade ile ana uygulamaya geçer. Aşama 3'e geçiş için kullanıcı onayı beklenmektedir.
 
 ---
 

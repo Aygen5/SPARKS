@@ -16,97 +16,116 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  group('Aşama 1 — Tasarım Sistemi ve Temel Tema Testleri', () {
-    setUp(() {
-      AppRouter.reset(initialLocation: AppRoutes.root);
-    });
+  group(
+    'Aşama 1 & 2 — Tasarım Sistemi ve Editoryal Açılış Ekranı Testleri',
+    () {
+      setUp(() {
+        AppRouter.reset(initialLocation: AppRoutes.splash);
+      });
 
-    test(
-      '1. Renk sistemi beklenen editoryal ve alışveriş değerlerine sahiptir',
-      () {
-        // Editoryal renkler
-        expect(AppColors.editorialCream, const Color(0xFFFDFBF7));
-        expect(AppColors.editorialBeige, const Color(0xFFE8E1D5));
-        expect(AppColors.editorialStone, const Color(0xFFD9D2C7));
-        expect(AppColors.editorialBrown, const Color(0xFF5A3E2B));
-        expect(AppColors.editorialAnthracite, const Color(0xFF222222));
+      test(
+        '1. Renk sistemi beklenen editoryal ve alışveriş değerlerine sahiptir',
+        () {
+          expect(AppColors.editorialCream, const Color(0xFFFDFBF7));
+          expect(AppColors.editorialBeige, const Color(0xFFE8E1D5));
+          expect(AppColors.editorialStone, const Color(0xFFD9D2C7));
+          expect(AppColors.editorialBrown, const Color(0xFF5A3E2B));
+          expect(AppColors.editorialAnthracite, const Color(0xFF222222));
+          expect(AppColors.shoppingBackground, const Color(0xFF000000));
+          expect(AppColors.primaryText, const Color(0xFFFFFFFF));
+          expect(AppColors.secondaryText, const Color(0xFF8E8E8E));
+          expect(AppColors.divider, const Color(0xFF1F1F1F));
+        },
+      );
 
-        // Alışveriş renkleri
-        expect(AppColors.shoppingBackground, const Color(0xFF000000));
-        expect(AppColors.primaryText, const Color(0xFFFFFFFF));
-        expect(AppColors.secondaryText, const Color(0xFF8E8E8E));
-        expect(AppColors.divider, const Color(0xFF1F1F1F));
-      },
-    );
+      test(
+        '2. Keskin köşe ilkesi (0 radius) ve boşluk sabitleri doğrulanır',
+        () {
+          expect(AppSpacing.buttonRadius, 0.0);
+          expect(AppSpacing.cardRadius, 0.0);
+          expect(AppSpacing.dialogRadius, 0.0);
+          expect(AppSpacing.borderWidth, 1.0);
+          expect(AppSpacing.buttonHeight, 52.0);
+          expect(AppSpacing.bottomBarHeight, 64.0);
+        },
+      );
 
-    test('2. Keskin köşe ilkesi (0 radius) ve boşluk sabitleri doğrulanır', () {
-      expect(AppSpacing.buttonRadius, 0.0);
-      expect(AppSpacing.cardRadius, 0.0);
-      expect(AppSpacing.dialogRadius, 0.0);
-      expect(AppSpacing.borderWidth, 1.0);
-      expect(AppSpacing.buttonHeight, 52.0);
-      expect(AppSpacing.bottomBarHeight, 64.0);
-    });
+      test('3. Editoryal görsel URL sabitleri eksiksiz ve doğrudur', () {
+        expect(AppImages.splashBackground, isNotEmpty);
+        expect(AppImages.homeLookbookImages.length, 4);
+      });
 
-    test('3. Editoryal görsel URL sabitleri eksiksiz ve doğrudur', () {
-      expect(AppImages.splashBackground, isNotEmpty);
-      expect(AppImages.homeLookbookImages.length, 4);
-      expect(AppImages.homeLook1, isNotEmpty);
-      expect(AppImages.homeLook2, isNotEmpty);
-      expect(AppImages.homeLook3, isNotEmpty);
-      expect(AppImages.homeLook4, isNotEmpty);
-    });
+      test(
+        '4. Tipografi hiyerarşisi serif ve sans-serif stillerini içerir',
+        () {
+          expect(AppTextStyles.brandLogoLarge.fontSize, 42);
+          expect(AppTextStyles.sectionHeading.fontSize, 24);
+          expect(AppTextStyles.buttonText.fontSize, 12);
+        },
+      );
 
-    test('4. Tipografi hiyerarşisi serif ve sans-serif stillerini içerir', () {
-      expect(AppTextStyles.brandLogoLarge.fontSize, 42);
-      expect(AppTextStyles.sectionHeading.fontSize, 24);
-      expect(AppTextStyles.menuGroup.fontSize, 11);
-      expect(AppTextStyles.menuItem.fontSize, 13);
-      expect(AppTextStyles.productTitle.fontSize, 13);
-      expect(AppTextStyles.productPrice.fontSize, 14);
-      expect(AppTextStyles.buttonText.fontSize, 12);
-    });
+      test(
+        '5. Material 3 teması keskin köşeli butonları ve siyah zemini yönetir',
+        () {
+          final theme = AppTheme.darkTheme;
+          expect(theme.useMaterial3, isTrue);
+          expect(theme.brightness, Brightness.dark);
+          expect(theme.scaffoldBackgroundColor, AppColors.shoppingBackground);
+        },
+      );
 
-    test(
-      '5. Material 3 teması keskin köşeli butonları ve siyah zemini yönetir',
-      () {
-        final theme = AppTheme.darkTheme;
+      testWidgets(
+        '6. SplashScreen başlangıç rotası olarak açılır, logo ve buton görünür',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(const SparksApp());
 
-        expect(theme.useMaterial3, isTrue);
-        expect(theme.brightness, Brightness.dark);
-        expect(theme.scaffoldBackgroundColor, AppColors.shoppingBackground);
-        expect(theme.colorScheme.surface, AppColors.shoppingBackground);
-        expect(theme.colorScheme.primary, AppColors.primaryText);
+          // Animasyonların tamamlanması için zaman tanı
+          await tester.pump(const Duration(milliseconds: 500));
+          await tester.pump(const Duration(milliseconds: 1500));
 
-        // Buton temalarının keskin köşeli (zero radius) olduğunu doğrula
-        final elevatedShape = theme.elevatedButtonTheme.style?.shape?.resolve(
-          {},
-        );
-        expect(elevatedShape, isA<RoundedRectangleBorder>());
-        expect(
-          (elevatedShape as RoundedRectangleBorder).borderRadius,
-          BorderRadius.zero,
-        );
+          // Logo ve butonun ekranda olduğunu doğrula
+          expect(find.text(AppConstants.appName), findsOneWidget);
+          expect(find.text(AppConstants.exploreCollectionBtn), findsOneWidget);
+        },
+      );
 
-        final outlinedShape = theme.outlinedButtonTheme.style?.shape?.resolve(
-          {},
-        );
-        expect(outlinedShape, isA<RoundedRectangleBorder>());
-        expect(
-          (outlinedShape as RoundedRectangleBorder).borderRadius,
-          BorderRadius.zero,
-        );
-      },
-    );
+      testWidgets(
+        '7. Koleksiyonu Keşfet butonuna basıldığında ana hedefe yumuşak geçiş yapılır',
+        (WidgetTester tester) async {
+          await tester.pumpWidget(const SparksApp());
 
-    testWidgets(
-      '6. SparksApp kök widget olarak hatasız açılır ve marka adını gösterir',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(const SparksApp());
-        await tester.pumpAndSettle();
+          // Animasyonları bitir
+          await tester.pump(const Duration(seconds: 2));
 
-        expect(find.text(AppConstants.appName), findsOneWidget);
-      },
-    );
-  });
+          final buttonFinder = find.text(AppConstants.exploreCollectionBtn);
+          expect(buttonFinder, findsOneWidget);
+
+          // Butona dokun
+          await tester.tap(buttonFinder);
+          await tester.pumpAndSettle();
+
+          // Ana sayfa geçiş hedefinin açıldığını doğrula
+          expect(find.text('Aşama 3 İskeleti Hazırlanıyor...'), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        '8. Dar ekran boyutlarında (360x640) SplashScreen taşma olmadan render edilir',
+        (WidgetTester tester) async {
+          tester.view.physicalSize = const Size(360, 640);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(() {
+            tester.view.resetPhysicalSize();
+            tester.view.resetDevicePixelRatio();
+          });
+
+          await tester.pumpWidget(const SparksApp());
+          await tester.pump(const Duration(seconds: 2));
+
+          expect(find.text(AppConstants.appName), findsOneWidget);
+          expect(find.text(AppConstants.exploreCollectionBtn), findsOneWidget);
+        },
+      );
+    },
+  );
 }

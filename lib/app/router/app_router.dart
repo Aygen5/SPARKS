@@ -6,7 +6,6 @@ import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/account/presentation/account_screen.dart';
 import 'package:sparks/features/cart/presentation/cart_screen.dart';
 import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.dart';
-import 'package:sparks/features/catalog/presentation/catalog_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';

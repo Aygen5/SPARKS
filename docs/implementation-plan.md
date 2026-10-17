@@ -89,21 +89,24 @@
 
 ---
 
-## Aşama 5 — Menü ve Kategori Akışı (KULLANICI ONAYI BEKLENİYOR)
+## Aşama 5 — Menü ve Kategori Akışı (TAMAMLANDI)
 - **Amaç:** İki sütunlu editoryal `KADIN` ve `ERKEK` menü ekranını ve kategori yönlendirmesini oluşturmak.
 - **Ön Koşullar:** Aşama 4 onayı.
-- **Yapılacak İşler:**
-  - Üstte serif tipografiyle `KADIN` ve `ERKEK` sekmeleri.
-  - Sol sütun: Numaralı ana gruplar (`| 01 | YENİ ÜRÜNLER`, `| 02 | KOLEKSİYON`, vb.).
-  - Sağ sütun: İlgili kategoriler (Erkek menüsünde etek ve çanta filtrelenir).
-  - Kategoriye tıklanınca `ProductListPage`'e seçilen cinsiyet ve kategori parametreleriyle geçiş.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/menu/*`.
-- **Test Yöntemi:** Menü kategorileri ve navigasyon testleri.
-- **Tamamlanma Ölçütü:** Seçilen kategoriye göre doğru parametrelerle katalog ekranı açılır.
+- **Gerçekleştirilen İşler:**
+  - `MenuCategoryItem` ve `MenuSection` domain entity sınıfları geliştirildi (`lib/features/menu/domain/entities/menu_item.dart`).
+  - Merkezi `MenuData` veri yapısı hazırlandı; KADIN (10 alt kategori) ve ERKEK (7 alt kategori; `ETEK`, `TOP | BODY` ve `ÇANTA` filtrelenmiş) reyonları tanımlandı (`lib/features/menu/data/menu_data.dart`).
+  - `MenuScreen`: Üstte `Playfair Display` serif `KADIN` ve `ERKEK` sekme seçicisi ve aktif alt çizgi göstergesi; sol sütunda %40 genişlikte numaralandırılmış ana gruplar (`|01| YENİ ÜRÜNLER`, `|02| KOLEKSİYON`, `|03| AYAKKABI | AKSESUAR`), sağ sütunda %60 genişlikte alt kategoriler içeren iki sütunlu editoryal ızgara geliştirildi (`lib/features/menu/presentation/menu_screen.dart`).
+  - Kategoriye dokunulduğunda GoRouter üzerinden `/catalog?gender=<GENDER>&category=<CATEGORY>` parametreleriyle geçiş bağlandı.
+  - Editoryal `CatalogPlaceholderScreen` oluşturuldu; sol üstte geri dönüş butonu ile menüdeki aktif sekme ve scroll konumu korunarak geri dönülebilirlik sağlandı (`lib/features/catalog/presentation/catalog_placeholder_screen.dart`).
+  - `AppRouter` yapılandırmasına `/catalog` rotası eklendi (`lib/app/router/app_router.dart`).
+  - `test/features/menu/menu_screen_test.dart`: Sekme değişimi, sol ve sağ sütun hiyerarşisi, cinsiyete göre kategori filtreleme, tıklama yönlendirmesi, GoRouter entegrasyonu ve 360x640 dar ekran taşmasızlık kontrollerini kapsayan 8 yeni test yazıldı. Toplam test sayısı 36'ya çıktı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/menu/*`, `lib/features/catalog/presentation/catalog_placeholder_screen.dart`, `lib/app/router/app_router.dart`, `test/features/menu/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (36 testin 36'sı başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** İki sütunlu editoryal menü reyon bazında kusursuz çalışır; kategoriye dokunulduğunda doğru cinsiyet ve kategori parametreleriyle geçiş ekranı açılır ve menüye sorunsuz dönülür.
 
 ---
 
-## Aşama 6 — Ürün Listeleme Ekranı ve Arama
+## Aşama 6 — Ürün Listeleme Ekranı ve Arama (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** 3 farklı görünüm moduna sahip ürün listesini, beden filtresini ve KADIN/ERKEK sekmeli arama ekranını geliştirmek.
 - **Ön Koşullar:** Aşama 5 onayı.
 - **Yapılacak İşler:**

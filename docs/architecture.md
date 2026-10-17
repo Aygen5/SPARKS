@@ -45,12 +45,23 @@ lib/
     ├── home/
     │   └── presentation/              # Dikey PageView editoryal lookbook
     ├── menu/
-    │   ├── data/                      # Kategori ve cinsiyet modelleri
-    │   └── presentation/              # İki sütunlu KADIN/ERKEK menü ekranı
+    │   ├── data/
+    │   │   └── menu_data.dart             # KADIN ve ERKEK için merkezi bölüm ve kategori tanımları
+    │   ├── domain/
+    │   │   └── entities/
+    │   │       └── menu_item.dart         # MenuCategoryItem ve MenuSection varlıkları
+    │   └── presentation/
+    │       └── menu_screen.dart           # İki sütunlu editoryal KADIN/ERKEK menü ekranı
     ├── catalog/
-    │   ├── data/                      # ProductModel, JSON çözümleyici, repository impl
-    │   ├── domain/                    # Product entity, ProductRepository sözleşmesi
-    │   └── presentation/              # 3 görünüm modlu ürün listeleme ve filtreler
+    │   ├── data/
+    │   │   ├── datasources/               # ProductLocalDataSource (AssetBundle)
+    │   │   ├── models/                    # ProductModel (JSON ayrıştırma, format kontrolü)
+    │   │   └── repositories/              # ProductRepositoryImpl (iş kuralları, filtreleme)
+    │   ├── domain/
+    │   │   ├── entities/                  # Product entity
+    │   │   └── repositories/              # ProductRepository arayüzü
+    │   └── presentation/
+    │       └── catalog_placeholder_screen.dart # Aşama 5 editoryal kategori geçiş ekranı
     ├── product_detail/
     │   └── presentation/              # İki görselli, açıklamalı, stok kontrollü detay ekranı
     ├── search/
@@ -133,3 +144,24 @@ Farklı ekranlar arasında paylaşılması gereken iki temel durum `flutter_bloc
   }
   ```
 - **`ProductRepositoryImpl`:** `ProductLocalDataSource` üzerinden verileri asenkron çeken, cinsiyet/kategori filtreleme ve metinsel arama iş kurallarını uygulayan repository sınıfı (`lib/features/catalog/data/repositories/product_repository_impl.dart`). İleride gerçek bir API'ye geçilmek istendiğinde UI katmanına dokunmadan `ProductRemoteDataSource` veya `HttpProductRepository` ile değiştirilebilir (Liskov Substitution Principle).
+
+---
+
+## 6. Editoryal Menü Mimarisi ve Kategori Akışı (Aşama 5)
+
+SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyerarşisini yansıtır:
+
+### 6.1. Domain & Veri Yapısı
+- **`MenuCategoryItem`:** Tekil alt kategori kimliği (`id`) ve ekranda görünen editoryal başlığını (`title`) tutan domain nesnesi (`lib/features/menu/domain/entities/menu_item.dart`).
+- **`MenuSection`:** Numaralandırma hanesi (`number`, örn: "01"), ana bölüm başlığı (`title`, örn: "KOLEKSİYON") ve alt kategori listesini barındıran domain nesnesi. `headerDisplay` getter'ı ile `|01| YENİ ÜRÜNLER` formatını üretir.
+- **`MenuData`:** `KADIN` ve `ERKEK` reyonları için statik merkezi kategori verilerini sağlar (`lib/features/menu/data/menu_data.dart`). `ERKEK` reyonunda `ETEK`, `TOP | BODY` ve `ÇANTA` kategorileri bulunmaz.
+
+### 6.2. Sunum Katmanı (`MenuScreen`)
+- **Üst Bölüm (`_GenderTabsHeader`):** `Playfair Display` serif tipografi ile `KADIN` ve `ERKEK` sekmeleri, 2px beyaz aktif alt çizgi göstergesi (`AnimatedContainer`).
+- **İki Sütunlu Izgara:**
+  - **Sol Sütun (%40 genişlik):** `|01| YENİ ÜRÜNLER`, `|02| KOLEKSİYON`, `|03| AYAKKABI | AKSESUAR` şeklinde numaralı ana gruplar (Inter Light, ikincil gri).
+  - **Sağ Sütun (%60 genişlik):** Seçili cinsiyete ait alt kategoriler (Inter Regular/Medium, beyaz).
+- **Yönlendirme Mekanizması:**
+  - Bir kategoriye dokunulduğunda `GoRouter` üzerinden `/catalog?gender=<GENDER>&category=<CATEGORY>` rotasına yönlendirilir (`context.push()`).
+  - Aşama 5 kapsamında bu rota editoryal `CatalogPlaceholderScreen` bileşenini açar; sol üstteki geri butonu ile kullanıcı menü ekranına (seçili sekme ve kaydırma konumu korunarak) geri döner.
+  - Aşama 6'da bu rota 3 modlu görünüm ve filtreleri içeren `CatalogScreen` bileşeniyle genişletilecektir.

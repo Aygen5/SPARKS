@@ -6,6 +6,7 @@ import 'package:sparks/app/theme/app_theme.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
 import 'package:sparks/features/catalog/presentation/catalog_screen.dart';
+import 'package:sparks/features/product_detail/presentation/product_detail_screen.dart';
 
 class FakeProductRepository implements ProductRepository {
   FakeProductRepository({this.products = const [], this.shouldFail = false});
@@ -329,7 +330,7 @@ void main() {
     );
 
     testWidgets(
-      '11. GoRouter /product/:id rotası ProductDetailPlaceholderScreen açar ve id taşır',
+      '11. GoRouter /product/:id rotası ProductDetailScreen açar ve ürün detayını yükler',
       (WidgetTester tester) async {
         AppRouter.reset(initialLocation: '/product/sparks-w-001');
 
@@ -341,8 +342,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('ÜRÜN DETAYI'), findsOneWidget);
-        expect(find.text('ID: sparks-w-001'), findsOneWidget);
+        expect(find.byType(ProductDetailScreen), findsOneWidget);
+        expect(find.text('DİK YAKA ÖRGÜ HIRKA'), findsOneWidget);
       },
     );
   });

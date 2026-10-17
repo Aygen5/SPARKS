@@ -9,6 +9,7 @@ import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
+import 'package:sparks/features/product_detail/presentation/product_detail_placeholder_screen.dart';
 import 'package:sparks/features/search/presentation/search_screen.dart';
 import 'package:sparks/features/splash/presentation/splash_screen.dart';
 
@@ -121,7 +122,7 @@ class AppRouter {
           ],
         ),
 
-        // 3. Ürün Listesi Geçici Geçiş Rotası (Aşama 5 Menü kategori yönlendirmesi)
+        // 3. Ürün Listeleme Ekranı (CatalogScreen sarmalayıcısı)
         GoRoute(
           path: AppRoutes.catalog,
           name: 'catalog',
@@ -130,6 +131,16 @@ class AppRouter {
                 state.uri.queryParameters['gender'] ?? AppConstants.genderWomen;
             final category = state.uri.queryParameters['category'] ?? '';
             return CatalogPlaceholderScreen(gender: gender, category: category);
+          },
+        ),
+
+        // 4. Ürün Detayı Geçici Rotası (Aşama 6 Navigasyon Geçişi)
+        GoRoute(
+          path: AppRoutes.productDetail,
+          name: 'productDetail',
+          builder: (context, state) {
+            final productId = state.pathParameters['id'] ?? '';
+            return ProductDetailPlaceholderScreen(productId: productId);
           },
         ),
       ],

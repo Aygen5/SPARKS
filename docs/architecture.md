@@ -61,11 +61,14 @@ lib/
     │   │   ├── entities/                  # Product entity
     │   │   └── repositories/              # ProductRepository arayüzü
     │   └── presentation/
-    │       └── catalog_placeholder_screen.dart # Aşama 5 editoryal kategori geçiş ekranı
+    │       ├── catalog_placeholder_screen.dart # Geriye dönük test uyumluluk wrapper'ı
+    │       └── catalog_screen.dart        # 3 görünüm modlu, kategori ve beden filtreli katalog
     ├── product_detail/
-    │   └── presentation/              # İki görselli, açıklamalı, stok kontrollü detay ekranı
+    │   └── presentation/
+    │       └── product_detail_placeholder_screen.dart # Ürün detay geçiş ekranı (Aşama 6)
     ├── search/
-    │   └── presentation/              # KADIN/ERKEK sekmeli gerçek zamanlı arama
+    │   └── presentation/
+    │       └── search_screen.dart         # KADIN/ERKEK sekmeli gerçek zamanlı arama ve öneriler
     ├── favorites/
     │   ├── presentation/
     │   │   ├── cubit/                 # FavoritesCubit & FavoritesState
@@ -163,5 +166,32 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   - **Sağ Sütun (%60 genişlik):** Seçili cinsiyete ait alt kategoriler (Inter Regular/Medium, beyaz).
 - **Yönlendirme Mekanizması:**
   - Bir kategoriye dokunulduğunda `GoRouter` üzerinden `/catalog?gender=<GENDER>&category=<CATEGORY>` rotasına yönlendirilir (`context.push()`).
-  - Aşama 5 kapsamında bu rota editoryal `CatalogPlaceholderScreen` bileşenini açar; sol üstteki geri butonu ile kullanıcı menü ekranına (seçili sekme ve kaydırma konumu korunarak) geri döner.
-  - Aşama 6'da bu rota 3 modlu görünüm ve filtreleri içeren `CatalogScreen` bileşeniyle genişletilecektir.
+  - Aşama 5 kapsamında bu rota editoryal `CatalogPlaceholderScreen` bileşenini açarken Aşama 6'da 3 modlu görünüm ve filtreleri içeren `CatalogScreen` bileşeniyle genişletilmiştir.
+
+---
+
+## 7. Ürün Kataloğu, Üçlü Görünüm Sistemi ve Gerçek Zamanlı Arama (Aşama 6)
+
+### 7.1. Katalog Veri Akışı ve Durum Yönetimi (`CatalogScreen`)
+- **Veri Akışı:**
+  `CatalogScreen -> ProductRepository -> ProductLocalDataSource -> assets/data/products.json`
+- **Asenkron Durumlar:**
+  - Yüklenme: Minimalist editoryal daire (`CircularProgressIndicator`).
+  - Hata: Kullanıcı dostu mesaj ve `TEKRAR DENE` butonu (`_fetchProducts`).
+  - Boş Sonuç: Seçili filtrelere uygun ürün bulunamadığında `FİLTRELERİ TEMİZLE` eylemi.
+- **Üçlü Görünüm Sistemi (View Switcher):**
+  - `GÖRÜNÜM 1`: Tek sütun büyük editoryal moda fotoğrafları, başlık, fiyat, indirim etiketi.
+  - `GÖRÜNÜM 2`: Yan yana iki sütunlu dengeli ızgara (`GridView.builder`, aspect ratio ~0.58).
+  - `GÖRÜNÜM 3`: Üç sütunlu yoğun katalog (`GridView.builder`, aspect ratio ~0.65). Ürün başlıkları gizlenir, sadece editoryal görseller ön plana çıkar.
+  - Üst bardaki `GÖRÜNÜM 1/2/3` butonu `1 -> 2 -> 3 -> 1` döngüsel sırasıyla görünümü anlık değiştirir.
+- **Kategori ve Beden Filtreleri:**
+  - Yatay kategori şeridi: `TÜMÜNÜ GÖR`, `SUNİ KÜRK`, `BOMBER`, `TEKNİK ŞİŞME` ve aktif menü kategorisi.
+  - Beden filtresi: `XS`, `S`, `M`, `L`, `XL`. `Product.sizes` alanındaki gerçek verilerle filtreleme yapar.
+
+### 7.2. Gerçek Zamanlı Arama Ekranı (`SearchScreen`)
+- **Reyon Sekmeleri:** `KADIN` ve `ERKEK` sekmeleri arama sonuçlarını ve önerileri ilgili cinsiyetle kısıtlar.
+- **Arama Alanı:** Alt çizgili minimalist `TextField` (`NE ARIYORSUNUZ?`), anlık `_onSearchInputChanged` dinleyicisi.
+- **Kapsam:** `ProductRepository.searchProducts` metodu üzerinden başlık, kategori, renk/kod ve açıklamada anlık arama.
+- **Önerilen Ürünler:** Arama kutusu boşken `İLGİNİZİ ÇEKEBİLECEK DİĞER ÜRÜNLER` başlığı altında ilgili reyonun ilk 2 ürünü listelenir.
+- **Geçiş Noktası:** Katalog veya arama ekranında bir ürüne dokunulduğunda `/product/:id` rotasına gidilir; Aşama 6 kapsamında `ProductDetailPlaceholderScreen` ürün kimliğini güvenle taşır.
+

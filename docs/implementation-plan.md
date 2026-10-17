@@ -106,21 +106,28 @@
 
 ---
 
-## Aşama 6 — Ürün Listeleme Ekranı ve Arama (KULLANICI ONAYI BEKLENİYOR)
+## Aşama 6 — Ürün Listeleme Ekranı ve Arama (TAMAMLANDI)
 - **Amaç:** 3 farklı görünüm moduna sahip ürün listesini, beden filtresini ve KADIN/ERKEK sekmeli arama ekranını geliştirmek.
 - **Ön Koşullar:** Aşama 5 onayı.
-- **Yapılacak İşler:**
-  - 3 modlu görünüm seçici döngüsü (Tek sütun büyük editoryal → 2 sütunlu ızgara → 3 sütunlu yoğun katalog).
-  - Beden filtresi (XS, S, M, L, XL).
-  - Arama ekranı: `NE ARIYORSUNUZ?` alt çizgili input ve anlık katalog araması.
-  - Ürün kartına tıklandığında `ProductDetailPage`'e geçiş.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/catalog/presentation/*`, `lib/features/search/presentation/*`.
-- **Test Yöntemi:** Görünüm değiştirme, filtreleme ve arama widget testleri.
-- **Tamamlanma Ölçütü:** 3 görünüm sorunsuz değişir, beden filtresi doğru çalışır, arama katalogla eşleşir.
+- **Gerçekleştirilen İşler:**
+  - `CatalogScreen`: `ProductRepository` üzerinden asenkron ürün çekme, yüklenme (`CircularProgressIndicator`), hata (`TEKRAR DENE` butonu) ve boş sonuç durumları geliştirildi (`lib/features/catalog/presentation/catalog_screen.dart`).
+  - 3 Farklı Editoryal Görünüm Modu:
+    - Görünüm 1: Büyük tek sütun editoryal kartlar (büyük fotoğraf, başlık, fiyat, indirim etiketi).
+    - Görünüm 2: Yan yana 2 sütunlu dengeli ızgara (`GridView`).
+    - Görünüm 3: 3 sütunlu yoğun katalog (ürün isimleri gizlenir, sadece editoryal görseller ön plandadır).
+    - `GÖRÜNÜM 1/2/3` butonu ile `1 -> 2 -> 3 -> 1` döngüsel geçiş mekanizması bağlandı.
+  - Yatay Kategori Şeridi: `TÜMÜNÜ GÖR`, `SUNİ KÜRK`, `BOMBER`, `TEKNİK ŞİŞME` ve menüden gelen aktif kategori etiketleri entegre edildi.
+  - Beden Filtresi: `XS`, `S`, `M`, `L`, `XL` beden seçenekleri, `products.json` içindeki gerçek `Product.sizes` verisi ile birebir eşleşecek şekilde filtreleme yaptı.
+  - `SearchScreen`: KADIN ve ERKEK reyon sekmeleri, alt çizgili minimalist arama alanı (`NE ARIYORSUNUZ?`), başlık, kategori, açıklama ve renk/kodda anlık arama, arama boşken önerilen 2 ürün gösterimi ve boş sonuç mesajı geliştirildi (`lib/features/search/presentation/search_screen.dart`).
+  - `ProductDetailPlaceholderScreen`: Ürün kartlarına dokunulduğunda `/product/:id` rotasına ürün kimliği taşınarak Aşama 7'ye hazırlık sağlandı (`lib/features/product_detail/presentation/product_detail_placeholder_screen.dart`).
+  - Testler: Katalog ekranı için 11 yeni test (`test/features/catalog/catalog_screen_test.dart`), arama ekranı için 8 yeni test (`test/features/search/search_screen_test.dart`) yazıldı. Toplam test sayısı 55'e çıktı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/catalog/presentation/*`, `lib/features/search/presentation/*`, `lib/features/product_detail/presentation/*`, `lib/app/router/app_router.dart`, `test/features/catalog/*`, `test/features/search/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (55 testin 55'i başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** 3 görünüm modu sorunsuz döner; kategori ve beden filtreleri gerçek verilerle çalışır; arama ekranı anlık olarak sonuçları ve önerileri listeler; tüm testler yeşildir.
 
 ---
 
-## Aşama 7 — Ürün Detay Sayfası
+## Aşama 7 — Ürün Detay Sayfası (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** İki büyük görsel, açıklama/malzeme sekmeleri, renk kodu ve stok durumu içeren detay ekranını geliştirmek.
 - **Ön Koşullar:** Aşama 6 onayı.
 - **Yapılacak İşler:**

@@ -72,21 +72,24 @@
 
 ---
 
-## Aşama 4 — Ürün Modeli ve Katalog Veri Kaynağı (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** 10–15 seçkin üründen oluşan merkezi `products.json` kataloğunu, `Product` entity'sini ve `ProductRepository` katmanını hazırlamak.
-- **Ön Koşullar:** Aşama 3 onayı ve veri kaynağı kararının kesinleşmesi.
-- **Yapılacak İşler:**
-  - `Product` entity ve `ProductModel` (JSON çözümleme) sınıflarının yazılması.
-  - `data/catalog/products.json` dosyasının oluşturulması (2 fotoğraf, TL fiyatı, malzeme, renk kodu, stok durumu, bedenler).
-  - `ProductRepository` arayüzü ve `LocalJsonProductRepository` uygulamasının yazılması.
-  - TL para birimi biçimlendirici (`CurrencyFormatter`) yardımcı fonksiyonunun yazılması.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/catalog/domain/*`, `lib/features/catalog/data/*`, `lib/data/catalog/products.json`, `lib/core/utils/currency_formatter.dart`.
-- **Test Yöntemi:** JSON çözümleme ve repository birim testleri.
-- **Tamamlanma Ölçütü:** Tüm 10-15 ürün eksiksiz çözümlenir, fiyatlar TL olarak doğru formatlanır.
+## Aşama 4 — Ürün Modeli ve Katalog Veri Kaynağı (TAMAMLANDI)
+- **Amaç:** 10–15 seçkin üründen oluşan merkezi `products.json` kataloğunu, `Product` entity'sini, `ProductModel` ve `ProductRepository` katmanını hazırlamak.
+- **Ön Koşullar:** Aşama 3 onayı (Sağlandı).
+- **Tamamlanan İşler:**
+  - `lib/features/catalog/domain/entities/product.dart`: Saf domain entity, 12 zorunlu/opsiyonel alan, tam olarak 2 görsel şartı, indirim ve eşitlik kontrolleri yazıldı.
+  - `lib/features/catalog/data/models/product_model.dart`: Açıklayıcı `FormatException` fırlatan sıkı JSON doğrulayıcı (`fromJson`), `toJson` ve `fromEntity` metotları geliştirildi.
+  - `assets/data/products.json`: 12 seçkin editoryal ürün (8 KADIN, 4 ERKEK), tam olarak 2 görsel URL'si, TL fiyatları, renk kodları, açıklamaları ve malzemeleriyle merkezi varlık olarak oluşturuldu.
+  - `lib/core/utils/currency_formatter.dart`: Türkiye standartlarına (`tr_TR`) uygun sayısal TL para birimi biçimlendirici yazıldı (`2.890,00 TL`).
+  - `lib/features/catalog/data/datasources/product_local_data_source.dart`: `AssetBundle` üzerinden JSON okuyan test edilebilir veri kaynağı yazıldı.
+  - `lib/features/catalog/domain/repositories/product_repository.dart` & `ProductRepositoryImpl`: `getProducts(gender, category)`, `getProductById(id)` ve `searchProducts(query)` işlevlerini sunan repository sözleşmesi ve uygulaması tamamlandı.
+  - `test/features/catalog/`: Model, doğrulama, para biçimlendirici, repository filtreleri ve `products.json` dosya şeması için 14 yeni birim test yazıldı; toplam test sayısı 28'e ulaştı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/catalog/domain/*`, `lib/features/catalog/data/*`, `assets/data/products.json`, `pubspec.yaml`, `lib/core/utils/currency_formatter.dart`, `test/features/catalog/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (28 testin 28'i başarılı), `flutter build web` (başarılı).
+- **Tamamlanma Ölçütü:** Katalog verisi merkezi kaynaktan asenkron olarak okunur, repository filtreleri eksiksiz çalışır ve tüm testler yeşildir. Aşama 5'e geçiş için kullanıcı onayı beklenmektedir.
 
 ---
 
-## Aşama 5 — Menü ve Kategori Akışı
+## Aşama 5 — Menü ve Kategori Akışı (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** İki sütunlu editoryal `KADIN` ve `ERKEK` menü ekranını ve kategori yönlendirmesini oluşturmak.
 - **Ön Koşullar:** Aşama 4 onayı.
 - **Yapılacak İşler:**

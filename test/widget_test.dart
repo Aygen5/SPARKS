@@ -9,6 +9,7 @@ import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/app/theme/app_theme.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/core/constants/app_images.dart';
+import 'package:sparks/features/home/presentation/home_screen.dart';
 
 void main() {
   setUpAll(() {
@@ -104,8 +105,12 @@ void main() {
           await tester.tap(buttonFinder);
           await tester.pumpAndSettle();
 
-          // Ana sayfa geçiş hedefinin açıldığını doğrula
-          expect(find.text('Aşama 3 İskeleti Hazırlanıyor...'), findsOneWidget);
+          // Ana sayfa Lookbook ekranının açıldığını doğrula
+          expect(find.byType(HomeScreen), findsOneWidget);
+          expect(
+            find.byKey(const ValueKey('lookbook_image_0')),
+            findsOneWidget,
+          );
         },
       );
 

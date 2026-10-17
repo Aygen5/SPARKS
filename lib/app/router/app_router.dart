@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
-import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/splash/presentation/splash_screen.dart';
+
+import 'package:sparks/features/home/presentation/home_screen.dart';
 
 /// SPARKS merkezi GoRouter rota tanımları.
 /// Kaynak: docs/architecture.md
@@ -36,14 +37,14 @@ class AppRouter {
           builder: (context, state) => const SplashScreen(),
         ),
 
-        // 2. Ana Uygulama Geçici Hedef Rotası (Aşama 3'te MainScaffold ve Lookbook ile geliştirilecek)
+        // 2. Ana Sayfa Rotası (Lookbook 4 Fotoğraflı Dikey Akış)
         GoRoute(
           path: AppRoutes.home,
           name: 'home',
           pageBuilder: (context, state) {
             return CustomTransitionPage<void>(
               key: state.pageKey,
-              child: const _HomeTransitionPlaceholderScreen(),
+              child: const HomeScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                     // Yumuşak editoryal fade-in geçiş efekti
@@ -55,6 +56,21 @@ class AppRouter {
                   },
             );
           },
+        ),
+
+        // 3. Menü Geçici Hedef Rotası (Fotoğrafa dokunulduğunda açılır)
+        GoRoute(
+          path: AppRoutes.menu,
+          name: 'menu',
+          builder: (context, state) => const Scaffold(
+            backgroundColor: AppColors.shoppingBackground,
+            body: Center(
+              child: Text(
+                'MENÜ',
+                style: TextStyle(color: AppColors.primaryText),
+              ),
+            ),
+          ),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
@@ -75,32 +91,5 @@ class AppRouter {
   /// Testler veya sıfırlama için router'ı yeniden oluşturur
   static void reset({String initialLocation = AppRoutes.splash}) {
     router = createRouter(initialLocation: initialLocation);
-  }
-}
-
-/// Aşama 2 geçiş doğrulama yer tutucusu.
-/// Açılış ekranından yumuşak geçişi doğrulamak için minimal bir hedeftir.
-/// Gerçek ana sayfa ve alt navigasyon Aşama 3'te geliştirilecektir.
-class _HomeTransitionPlaceholderScreen extends StatelessWidget {
-  const _HomeTransitionPlaceholderScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.shoppingBackground,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(AppConstants.appName, style: AppTextStyles.brandLogoMedium),
-            const SizedBox(height: 12),
-            Text(
-              'Aşama 3 İskeleti Hazırlanıyor...',
-              style: AppTextStyles.caption,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

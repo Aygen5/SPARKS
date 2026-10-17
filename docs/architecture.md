@@ -121,8 +121,9 @@ Farklı ekranlar arasında paylaşılması gereken iki temel durum `flutter_bloc
 
 ## 5. Veri Katmanı ve Repository Sözleşmesi
 
-- **`Product` Entity:** İş kurallarının kullandığı saf ürün nesnesi.
-- **`ProductModel`:** JSON verisini okuyan ve dönüştüren model sınıfı.
+- **`Product` Entity:** İş kurallarının kullandığı saf ürün nesnesi (`lib/features/catalog/domain/entities/product.dart`).
+- **`ProductModel`:** JSON verisini okuyan, 12 alanı sıkı şekilde doğrulayan ve serileştiren model sınıfı (`lib/features/catalog/data/models/product_model.dart`).
+- **`ProductLocalDataSource`:** `assets/data/products.json` varlık dosyasını `AssetBundle` üzerinden okuyan yerel veri kaynağı (`lib/features/catalog/data/datasources/product_local_data_source.dart`).
 - **`ProductRepository` (Arayüz):**
   ```dart
   abstract class ProductRepository {
@@ -131,4 +132,4 @@ Farklı ekranlar arasında paylaşılması gereken iki temel durum `flutter_bloc
     Future<List<Product>> searchProducts(String query, {String? gender});
   }
   ```
-- **`LocalJsonProductRepository`:** `rootBundle.loadString('lib/data/catalog/products.json')` üzerinden verileri asenkron çözen uygulama sınıfı. İleride gerçek bir API'ye geçilmek istendiğinde tek satırla `HttpProductRepository` ile değiştirilebilir (Liskov Substitution Principle).
+- **`ProductRepositoryImpl`:** `ProductLocalDataSource` üzerinden verileri asenkron çeken, cinsiyet/kategori filtreleme ve metinsel arama iş kurallarını uygulayan repository sınıfı (`lib/features/catalog/data/repositories/product_repository_impl.dart`). İleride gerçek bir API'ye geçilmek istendiğinde UI katmanına dokunmadan `ProductRemoteDataSource` veya `HttpProductRepository` ile değiştirilebilir (Liskov Substitution Principle).

@@ -55,7 +55,7 @@ Kullanıcının 10–15 ürünü elle tek tek girmek istememesi ve otomatik/yar�
 ## 4. Uygulanabilir Çözüm Seçenekleri
 
 ### Tercih Edilen Çözüm A (Özenle Doğrulanmış Merkezi JSON Kataloğu):
-- 10–15 seçkin ürün, projenin `data/catalog/products.json` dosyasında yapılandırılmış olarak yer alır.
+- 10–15 seçkin ürün, projenin `assets/data/products.json` dosyasında yapılandırılmış olarak yer alır.
 - Bu JSON dosyasında her ürünün adı, 2 fotoğrafı, TL fiyatı, malzeme bilgisi, renk kodu ve bedenleri eksiksiz ve doğrulanmış biçimde tutulur.
 - **Avantajı:** Sıfır ağ bağımlılığı, anında yüklenme hızı, hata riskinin olmaması, görsel teliflerinin kontrollü seçilebilmesi ve Flutter kodlarının içine ürün gömülmemesi.
 - Kullanıcı dilediği zaman bu JSON dosyasını açıp tek bir yerden ürünleri düzenleyebilir veya yeni ürün ekleyebilir.
@@ -63,7 +63,7 @@ Kullanıcının 10–15 ürünü elle tek tek girmek istememesi ve otomatik/yar�
 ### Alternatif Çözüm B (Kullanıcı Tarafından İçe Aktarma — Bookmarklet / Script):
 - Kullanıcı tarayıcısında beğendiği bir Zara ürün sayfasını açtığında, tarayıcı konsolunda çalışan veya sayfanın açık JSON-LD (`schema.org/Product`) meta etiketini kopyalayan küçük bir JavaScript aracı (`bookmarklet`) kullanır.
 - Bu araç, açık olan sayfadaki başlık, fiyat, görsel URL'leri ve ürün kodunu tek tıkla panoya JSON formatında kopyalar.
-- Kullanıcı bu JSON çıktısını `data/catalog/products.json` dosyasına yapıştırır.
+- Kullanıcı bu JSON çıktısını `assets/data/products.json` dosyasına yapıştırır.
 - **Avantajı:** Hiçbir izinsiz bot/scraping yapılmaz; kullanıcı tarayıcısında gördüğü veriyi zahmetsizce JSON formatında panoya alır.
 
 ---

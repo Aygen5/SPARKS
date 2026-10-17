@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
-import 'package:sparks/core/constants/app_constants.dart';
+import 'package:sparks/features/account/presentation/account_screen.dart';
+import 'package:sparks/features/cart/presentation/cart_screen.dart';
+import 'package:sparks/features/home/presentation/home_screen.dart';
+import 'package:sparks/features/menu/presentation/menu_screen.dart';
+import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
+import 'package:sparks/features/search/presentation/search_screen.dart';
 import 'package:sparks/features/splash/presentation/splash_screen.dart';
 
 /// SPARKS merkezi GoRouter rota tanımları.
@@ -30,31 +35,88 @@ class AppRouter {
       initialLocation: initialLocation,
       routes: [
         // 1. Açılış Ekranı (Splash Screen - Başlangıç Rotası)
+        // Alt navigasyon çubuğu içermez; bağımsız tam ekran editoryal rotadır.
         GoRoute(
           path: AppRoutes.splash,
           name: 'splash',
           builder: (context, state) => const SplashScreen(),
         ),
 
-        // 2. Ana Uygulama Geçici Hedef Rotası (Aşama 3'te MainScaffold ve Lookbook ile geliştirilecek)
-        GoRoute(
-          path: AppRoutes.home,
-          name: 'home',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage<void>(
-              key: state.pageKey,
-              child: const _HomeTransitionPlaceholderScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    // Yumuşak editoryal fade-in geçiş efekti
-                    return FadeTransition(
-                      opacity: CurveTween(curve: Curves.easeInOut)
-                          .animate(animation),
-                      child: child,
+        // 2. Ana Uygulama Kalıcı 5 Sekmeli Kabuğu (StatefulShellRoute)
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return MainScaffold(navigationShell: navigationShell);
+          },
+          branches: [
+            // Dal 0: Anasayfa (Lookbook 4 Fotoğraflı Dikey Akış)
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.home,
+                  name: 'home',
+                  pageBuilder: (context, state) {
+                    return CustomTransitionPage<void>(
+                      key: state.pageKey,
+                      child: const HomeScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            // Açılış ekranından yumuşak editoryal fade-in geçişi
+                            return FadeTransition(
+                              opacity: CurveTween(curve: Curves.easeInOut)
+                                  .animate(animation),
+                              child: child,
+                            );
+                          },
                     );
                   },
-            );
-          },
+                ),
+              ],
+            ),
+
+            // Dal 1: MENÜ
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.menu,
+                  name: 'menu',
+                  builder: (context, state) => const MenuScreen(),
+                ),
+              ],
+            ),
+
+            // Dal 2: Arama
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.search,
+                  name: 'search',
+                  builder: (context, state) => const SearchScreen(),
+                ),
+              ],
+            ),
+
+            // Dal 3: HESAP
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.account,
+                  name: 'account',
+                  builder: (context, state) => const AccountScreen(),
+                ),
+              ],
+            ),
+
+            // Dal 4: Sepet
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppRoutes.cart,
+                  name: 'cart',
+                  builder: (context, state) => const CartScreen(),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
@@ -75,32 +137,5 @@ class AppRouter {
   /// Testler veya sıfırlama için router'ı yeniden oluşturur
   static void reset({String initialLocation = AppRoutes.splash}) {
     router = createRouter(initialLocation: initialLocation);
-  }
-}
-
-/// Aşama 2 geçiş doğrulama yer tutucusu.
-/// Açılış ekranından yumuşak geçişi doğrulamak için minimal bir hedeftir.
-/// Gerçek ana sayfa ve alt navigasyon Aşama 3'te geliştirilecektir.
-class _HomeTransitionPlaceholderScreen extends StatelessWidget {
-  const _HomeTransitionPlaceholderScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.shoppingBackground,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(AppConstants.appName, style: AppTextStyles.brandLogoMedium),
-            const SizedBox(height: 12),
-            Text(
-              'Aşama 3 İskeleti Hazırlanıyor...',
-              style: AppTextStyles.caption,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

@@ -56,22 +56,23 @@
 
 ---
 
-## Aşama 3 — Ana İskelet (`MainScaffold`) ve Editoryal Ana Sayfa
+## Aşama 3 — Ana İskelet (`MainScaffold`) ve Editoryal Ana Sayfa (TAMAMLANDI)
 - **Amaç:** 5 sekmeli sabit alt navigasyonu ve 4 dikey fotoğraflı editoryal lookbook ana sayfasını oluşturmak.
-- **Ön Koşullar:** Aşama 2 onayı.
-- **Yapılacak İşler:**
-  - `StatefulShellRoute` ile 5 sekmeli (`ANASAYFA`, `MENÜ`, `ARAMA`, `HESAP`, `SEPET`) alt navigasyon iskeletinin (`MainScaffold`) kurulması.
-  - Aktif sekme altında küçük beyaz nokta indikatörü.
-  - Ana sayfada dikey kaydırılabilir 4 tam ekran editoryal moda fotoğrafı (`PageView`).
-  - Sabit `SPARKS` logosunun fotoğraflarla kaymadan alt barın üstünde sabit kalması.
-  - Fotoğraflara dokunulduğunda `MENÜ` sekmesine yönlendirme.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/app/navigation/main_scaffold.dart`, `lib/features/home/presentation/home_screen.dart`.
-- **Test Yöntemi:** Sekme geçişi ve dikey kaydırma widget testleri.
-- **Tamamlanma Ölçütü:** 5 sekme arasında durum kaybı olmadan geçiş yapılır; ana sayfa fotoğrafları akıcı kayar.
+- **Ön Koşullar:** Aşama 2 onayı (Sağlandı).
+- **Tamamlanan İşler:**
+  - `lib/features/home/presentation/home_screen.dart`: 4 adet editoryal moda fotoğrafı içeren dikey `PageView`, alt kontrast gradyanı ve sayfa kaydırılsa dahi sağ alt köşede sabit kalan `Playfair Display` serif `SPARKS` logosu geliştirildi. Fotoğrafa dokunulduğunda Menü sekmesine yönlendirme sağlandı.
+  - `lib/features/navigation/presentation/sparks_bottom_nav_bar.dart`: Tam siyah arka planlı, keskin köşeli (0 radius), üstte 1px ayırıcı çizgili, aktif sekme altında beyaz nokta indikatörü bulunan 5 sekmeli (`Anasayfa`, `MENÜ`, `Arama`, `HESAP`, `Sepet [ 0 ]`) alt navigasyon çubuğu geliştirildi.
+  - `lib/features/navigation/presentation/main_scaffold.dart`: `StatefulNavigationShell` ile çalışan kalıcı ana uygulama kabuğu oluşturuldu.
+  - `lib/features/{menu,search,account,cart}/presentation/*`: 4 sekme için minimalist geçici hedef ekranları oluşturuldu.
+  - `lib/app/router/app_router.dart`: `StatefulShellRoute.indexedStack` mimarisi kurularak 5 dal bağlandı; açılış ekranı alt barlardan izole bağımsız rota olarak korundu.
+  - `test/widget_test.dart`: 14 kapsamlı testle Lookbook dikey akışı, sabit logo, 5 sekmeli bar, aktif nokta hareketi, fotoğraftan menüye yönlendirme ve 360x640 dar ekran taşma denetimi doğrulandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/home/presentation/home_screen.dart`, `lib/features/navigation/presentation/sparks_bottom_nav_bar.dart`, `lib/features/navigation/presentation/main_scaffold.dart`, `lib/features/{menu,search,account,cart}/presentation/*`, `lib/app/router/app_router.dart`, `lib/core/constants/app_constants.dart`, `test/widget_test.dart`, `docs/implementation-plan.md`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (14 testin 14'ü başarılı), `flutter build web` (başarılı).
+- **Tamamlanma Ölçütü:** 5 sekme arasında durum kaybı olmadan geçiş yapılır; alt navigasyon kalıcı kalır, ana sayfa fotoğrafları dikey kayar ve logo sabittir. Aşama 4'e geçiş için kullanıcı onayı beklenmektedir.
 
 ---
 
-## Aşama 4 — Ürün Modeli ve Katalog Veri Kaynağı
+## Aşama 4 — Ürün Modeli ve Katalog Veri Kaynağı (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** 10–15 seçkin üründen oluşan merkezi `products.json` kataloğunu, `Product` entity'sini ve `ProductRepository` katmanını hazırlamak.
 - **Ön Koşullar:** Aşama 3 onayı ve veri kaynağı kararının kesinleşmesi.
 - **Yapılacak İşler:**

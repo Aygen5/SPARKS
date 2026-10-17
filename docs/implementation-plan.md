@@ -127,23 +127,30 @@
 
 ---
 
-## Aşama 7 — Ürün Detay Sayfası (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** İki büyük görsel, açıklama/malzeme sekmeleri, renk kodu ve stok durumu içeren detay ekranını geliştirmek.
+## Aşama 7 — Ürün Detay Sayfası ve Favorilere Ekleme
+- **Amaç:** İki büyük editoryal görsel, açıklama/malzeme sekmeleri, renk kodu panoya kopyalama, stok durumu ve merkezi favori sistemini geliştirmek.
 - **Ön Koşullar:** Aşama 6 onayı.
-- **Yapılacak İşler:**
-  - Sol üstte geri butonu, sağ üstte favori (kalp) ikonu.
-  - İki büyük editoryal fotoğraf yerleşimi.
-  - Fiyat, eski fiyat ve indirim gösterimi.
-  - `AÇIKLAMA` ve `MALZEMELER` sekme içeriği.
-  - Renk ve referans kodu kopyalama.
-  - Stokta olan ürünlerde `SEPETE EKLE`, tükenenlerde `TÜKENDİ` butonu.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/product_detail/presentation/*`.
-- **Test Yöntemi:** Detay ekranı ve stok durumu testleri.
-- **Tamamlanma Ölçütü:** Ürün bilgileri eksiksiz gösterilir, kopyalama ve sekmeler çalışır.
+- **Gerçekleştirilen İşler:**
+  - `ProductDetailScreen`: GoRouter `/product/:id` rotasına tam donanımlı ürün detay sayfası bağlandı (`lib/features/product_detail/presentation/product_detail_screen.dart`).
+  - Asenkron Veri Yükleme: `ProductRepository.getProductById(id)` üzerinden veri çekme, editoryal yükleme spinner'ı (`CircularProgressIndicator`), hata ve ürün bulunamadı durumları (`ÜRÜN BULUNAMADI` + `TEKRAR DENE` butonu).
+  - Üst Bar: Sol üstte `Icons.arrow_back` geri dönüş butonu, merkezde marka logosu ve sağ üstte reaktif kalp butonu (`Icons.favorite` / `Icons.favorite_border`).
+  - İki Görselli Galeri: 3:4 oranlı editoryal `PageView.builder` ve sağ altta keskin siyah zeminli `"1/2"` / `"2/2"` sayfa indikatörü.
+  - Fiyat ve İndirim: İndirimli ürünlerde güncel fiyat (kalın beyaz), üstü çizili eski fiyat ve beyaz indirim etiketi (`-%15`); indirimsiz ürünlerde yalnızca güncel fiyat gösterimi.
+  - Renk ve Referans Kodu: `product.colorAndCode` yanındaki kopyalama butonu ile `Clipboard.setData` panoya yazma ve kullanıcıya editoryal SnackBar bildirimi (`"Renk ve ürün kodu kopyalandı"`).
+  - Editoryal Sekmeler: `AÇIKLAMA` (varsayılan) ve `MALZEMELER` sekmeleri arasında dokunmatik geçiş ve dinamik içerik gösterimi.
+  - Stok Aksiyonu: `isOutOfStock == true` olduğunda pasif `TÜKENDİ` butonu; stokta olduğunda keskin beyaz `SEPETE EKLE` butonu (Aşama 8 SnackBar bilgilendirmesi ile).
+  - Merkezi Favori Mimarisi:
+    - `FavoritesLocalDataSource`: `SharedPreferences` tabanlı kalıcı kimlik saklama ve testler için `InMemoryFavoritesLocalDataSource` (`lib/features/favorites/data/datasources/*`).
+    - `FavoritesRepository` ve `FavoritesRepositoryImpl`: `Set<String>` ile duplikasyonu önleyen repository sözleşmesi ve önbellek (`lib/features/favorites/domain/*`, `lib/features/favorites/data/*`).
+    - `FavoritesManager`: `ChangeNotifier` tabanlı merkezi durum yöneticisi (`lib/features/favorites/presentation/manager/favorites_manager.dart`).
+  - Testler: Favoriler katmanı için 11 birim test (`test/features/favorites/favorites_test.dart`), ürün detay ekranı için 11 widget testi (`test/features/product_detail/product_detail_screen_test.dart`) yazıldı. Toplam test sayısı 77'ye ulaştı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/product_detail/presentation/product_detail_screen.dart`, `lib/features/favorites/*`, `lib/app/router/app_router.dart`, `test/features/favorites/*`, `test/features/product_detail/*`, `test/features/catalog/catalog_screen_test.dart`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (77 testin 77'si başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Ürün detayları ve görselleri kusursuz yüklenir, sekmeler ve kopyalama çalışır; favori durumu kalıcı olarak senkronize edilir; tüm testler yeşildir.
 
 ---
 
-## Aşama 8 — Ortak Durum Yönetimi (Sepet & Favoriler Cubit)
+## Aşama 8 — Ortak Durum Yönetimi (Sepet & Favoriler Cubit) (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Sepet ve favori durumlarını reaktif Cubit sınıflarıyla tüm ekranlar arasında senkronize etmek.
 - **Ön Koşullar:** Aşama 7 onayı.
 - **Yapılacak İşler:**

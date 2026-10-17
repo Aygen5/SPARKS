@@ -9,7 +9,7 @@ import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
-import 'package:sparks/features/product_detail/presentation/product_detail_placeholder_screen.dart';
+import 'package:sparks/features/product_detail/presentation/product_detail_screen.dart';
 import 'package:sparks/features/search/presentation/search_screen.dart';
 import 'package:sparks/features/splash/presentation/splash_screen.dart';
 
@@ -134,13 +134,13 @@ class AppRouter {
           },
         ),
 
-        // 4. Ürün Detayı Geçici Rotası (Aşama 6 Navigasyon Geçişi)
+        // 4. Ürün Detayı Rotası (Aşama 7 Gerçek Detay Ekranı)
         GoRoute(
           path: AppRoutes.productDetail,
           name: 'productDetail',
           builder: (context, state) {
             final productId = state.pathParameters['id'] ?? '';
-            return ProductDetailPlaceholderScreen(productId: productId);
+            return ProductDetailScreen(productId: productId);
           },
         ),
       ],

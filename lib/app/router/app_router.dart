@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
+import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/account/presentation/account_screen.dart';
 import 'package:sparks/features/cart/presentation/cart_screen.dart';
+import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
@@ -117,6 +119,18 @@ class AppRouter {
               ],
             ),
           ],
+        ),
+
+        // 3. Ürün Listesi Geçici Geçiş Rotası (Aşama 5 Menü kategori yönlendirmesi)
+        GoRoute(
+          path: AppRoutes.catalog,
+          name: 'catalog',
+          builder: (context, state) {
+            final gender =
+                state.uri.queryParameters['gender'] ?? AppConstants.genderWomen;
+            final category = state.uri.queryParameters['category'] ?? '';
+            return CatalogPlaceholderScreen(gender: gender, category: category);
+          },
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

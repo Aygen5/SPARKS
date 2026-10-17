@@ -1,0 +1,218 @@
+[
+  {
+    "id": "sparks-w-001",
+    "title": "DİK YAKA ÖRGÜ HIRKA",
+    "price": 2890.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "KAZAK | HIRKA",
+    "images": [
+      "https://i.pinimg.com/736x/fb/a0/18/fba01891e9a67b1f7c736062a4c89f98.jpg",
+      "https://i.pinimg.com/1200x/52/96/87/5296879fc3457d3f3534ddd52e9da382.jpg"
+    ],
+    "description": "Yüksek dik yakalı, uzun kollu, önü metal fermuar kapamalı kalın örgü hırka. Ribana detaylı manşetler ve etek ucu.",
+    "colorAndCode": "SİYAH | 2753/032",
+    "materials": "%85 Yün, %15 Poliamit",
+    "isOutOfStock": false,
+    "sizes": ["XS", "S", "M", "L", "XL"]
+  },
+  {
+    "id": "sparks-w-002",
+    "title": "BÜZGÜLÜ DETAYLI KEMERLİ TRİKO",
+    "price": 3290.0,
+    "oldPrice": 3890.0,
+    "discountText": "-%15",
+    "gender": "KADIN",
+    "category": "TOP | BODY",
+    "images": [
+      "https://i.pinimg.com/1200x/52/96/87/5296879fc3457d3f3534ddd52e9da382.jpg",
+      "https://i.pinimg.com/736x/fb/a0/18/fba01891e9a67b1f7c736062a4c89f98.jpg"
+    ],
+    "description": "Kayık yaka, balon formlu geniş kollu, belinde ayarlanabilir ince metal tokalı kemer detayı bulunan dökümlü triko.",
+    "colorAndCode": "SİYAH | 3412/104",
+    "materials": "%70 Viskon, %30 İpek",
+    "isOutOfStock": false,
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "sparks-w-003",
+    "title": "KUŞAKLI YÜN KABAN",
+    "price": 6580.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "KABAN | MONT",
+    "images": [
+      "https://i.pinimg.com/1200x/74/5d/78/745d78a35a90710fcb3b3b0580ce9c9f.jpg",
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg"
+    ],
+    "description": "Geniş kruvaze yaka, kendinden kumaş kuşaklı, yan cepli ve arka yırtmaçlı uzun editoryal yün kaban.",
+    "colorAndCode": "BORDO / KAHVE | 8120/402",
+    "materials": "%100 Saf Yün, Astar: %100 Viskon",
+    "isOutOfStock": false,
+    "sizes": ["XS", "S", "M", "L"]
+  },
+  {
+    "id": "sparks-w-004",
+    "title": "VATKALI OVERSİZE CEKET",
+    "price": 4290.0,
+    "oldPrice": 4990.0,
+    "discountText": "-%14",
+    "gender": "KADIN",
+    "category": "CEKET",
+    "images": [
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg",
+      "https://i.pinimg.com/1200x/52/96/87/5296879fc3457d3f3534ddd52e9da382.jpg"
+    ],
+    "description": "Belirgin vatkalı omuz yapısı, sivri yaka, tek düğmeli ön kapama ve fleto cepli maskülen kesim ceket.",
+    "colorAndCode": "KUM BEJİ | 4190/012",
+    "materials": "%65 Keten, %35 Pamuk",
+    "isOutOfStock": false,
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "sparks-w-005",
+    "title": "BOL PAÇA PİLELİ PANTOLON",
+    "price": 2490.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "PANTOLON",
+    "images": [
+      "https://i.pinimg.com/1200x/52/96/87/5296879fc3457d3f3534ddd52e9da382.jpg",
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg"
+    ],
+    "description": "Yüksek bel, önü çift pileli, dökümlü geniş paçalı ve gizli fermuar kapamalı terzi işi pantolon.",
+    "colorAndCode": "EKRU | 1940/220",
+    "materials": "%75 Polyester, %21 Viskon, %4 Elastan",
+    "isOutOfStock": false,
+    "sizes": ["XS", "S", "M", "L", "XL"]
+  },
+  {
+    "id": "sparks-w-006",
+    "title": "DÜZ KESİM YÜKSEK BEL JEAN",
+    "price": 1990.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "JEAN",
+    "images": [
+      "https://i.pinimg.com/736x/fb/a0/18/fba01891e9a67b1f7c736062a4c89f98.jpg",
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg"
+    ],
+    "description": "Otantik denim kumaşı, yüksek bel, beş cepli ve düz bacak kesimli klasik zamansız jean pantolon.",
+    "colorAndCode": "AÇIK MAVİ | 5214/055",
+    "materials": "%100 Pamuk",
+    "isOutOfStock": false,
+    "sizes": ["34", "36", "38", "40", "42"]
+  },
+  {
+    "id": "sparks-w-007",
+    "title": "DERİ SÜET KOMBİNLİ CEKET",
+    "price": 5479.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "CEKET",
+    "images": [
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg",
+      "https://i.pinimg.com/1200x/74/5d/78/745d78a35a90710fcb3b3b0580ce9c9f.jpg"
+    ],
+    "description": "Hakiki süet ve napa deri panellerden oluşan, dik yakalı ve kontrast biyeli lüks editoryal ceket.",
+    "colorAndCode": "KAHVERENGİ | 6102/331",
+    "materials": "%100 Hakiki Deri, Astar: %100 Viskon",
+    "isOutOfStock": true,
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "sparks-w-008",
+    "title": "UZUN DERİ ÇİZME",
+    "price": 4990.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "KADIN",
+    "category": "AYAKKABI",
+    "images": [
+      "https://i.pinimg.com/1200x/74/5d/78/745d78a35a90710fcb3b3b0580ce9c9f.jpg",
+      "https://i.pinimg.com/736x/fb/a0/18/fba01891e9a67b1f7c736062a4c89f98.jpg"
+    ],
+    "description": "Diz altı boy, yuvarlak burunlu, kalın deri blok topuklu ve fermuarsız minimalist çizme.",
+    "colorAndCode": "KOYU KAHVE | 9201/101",
+    "materials": "%100 Hakiki Deri",
+    "isOutOfStock": false,
+    "sizes": ["36", "37", "38", "39", "40"]
+  },
+  {
+    "id": "sparks-m-001",
+    "title": "YÜN BLEND MASKÜLEN KABAN",
+    "price": 6890.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "ERKEK",
+    "category": "KABAN | MONT",
+    "images": [
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg",
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg"
+    ],
+    "description": "Geniş yaka, tek sıra düğmeli, içi astarlı ve arka yırtmaçlı yapısal yün erkek kabanı.",
+    "colorAndCode": "ANTRASİT | 7321/040",
+    "materials": "%80 Yün, %20 Poliamit",
+    "isOutOfStock": false,
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "id": "sparks-m-002",
+    "title": "TERZİ İŞİ DÜZ KESİM CEKET",
+    "price": 4590.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "ERKEK",
+    "category": "CEKET",
+    "images": [
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg",
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg"
+    ],
+    "description": "Klasik çentik yaka, iki düğmeli, göğüs cepli ve çift yırtmaçlı zamansız erkek takım ceketi.",
+    "colorAndCode": "SİYAH | 2890/011",
+    "materials": "%100 Saf Yün",
+    "isOutOfStock": false,
+    "sizes": ["48", "50", "52", "54"]
+  },
+  {
+    "id": "sparks-m-003",
+    "title": "PİLELİ DÖKÜMLÜ PANTOLON",
+    "price": 2690.0,
+    "oldPrice": 3190.0,
+    "discountText": "-%15",
+    "gender": "ERKEK",
+    "category": "PANTOLON",
+    "images": [
+      "https://i.pinimg.com/1200x/a4/e0/d9/a4e0d91654a00f70c382b94a3660cd59.jpg",
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg"
+    ],
+    "description": "Önü tek pileli, rahat paça kesimli, yan cepli ve paçası duble dökümlü kumaş pantolon.",
+    "colorAndCode": "KOYU GRİ | 1822/020",
+    "materials": "%70 Yün, %30 Polyester",
+    "isOutOfStock": false,
+    "sizes": ["30", "32", "34", "36"]
+  },
+  {
+    "id": "sparks-m-004",
+    "title": "BALIKÇI YAKA MERİNOS TRİKO",
+    "price": 2490.0,
+    "oldPrice": null,
+    "discountText": null,
+    "gender": "ERKEK",
+    "category": "KAZAK | HIRKA",
+    "images": [
+      "https://i.pinimg.com/736x/2f/a1/66/2fa166116fda44667f26c689ef1458a3.jpg",
+      "https://i.pinimg.com/1200x/52/96/87/5296879fc3457d3f3534ddd52e9da382.jpg"
+    ],
+    "description": "İnce merinos yününden üretilmiş, dikişsiz balıkçı yaka, ribana manşet ve etek uçlu temel triko kazak.",
+    "colorAndCode": "SİYAH | 3310/001",
+    "materials": "%100 Ekstra İnce Merinos Yünü",
+    "isOutOfStock": false,
+    "sizes": ["S", "M", "L", "XL"]
+  }
+]

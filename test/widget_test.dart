@@ -9,7 +9,13 @@ import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/app/theme/app_theme.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/core/constants/app_images.dart';
+import 'package:sparks/features/account/presentation/account_screen.dart';
+import 'package:sparks/features/cart/presentation/cart_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
+import 'package:sparks/features/menu/presentation/menu_screen.dart';
+import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
+import 'package:sparks/features/navigation/presentation/sparks_bottom_nav_bar.dart';
+import 'package:sparks/features/search/presentation/search_screen.dart';
 
 void main() {
   setUpAll(() {
@@ -48,6 +54,7 @@ void main() {
           expect(AppSpacing.borderWidth, 1.0);
           expect(AppSpacing.buttonHeight, 52.0);
           expect(AppSpacing.bottomBarHeight, 64.0);
+          expect(AppSpacing.activeIndicatorSize, 4.0);
         },
       );
 
@@ -133,4 +140,146 @@ void main() {
       );
     },
   );
+
+  group('Aşama 3 — Lookbook ve 5 Sekmeli Alt Navigasyon Testleri', () {
+    setUp(() {
+      AppRouter.reset(initialLocation: AppRoutes.home);
+    });
+
+    testWidgets(
+      '9. Ana sayfa (Lookbook) 4 fotoğraf içeren dikey PageView barındırır',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(HomeScreen), findsOneWidget);
+        expect(find.byType(PageView), findsOneWidget);
+
+        final pageView = tester.widget<PageView>(find.byType(PageView));
+        expect(pageView.scrollDirection, Axis.vertical);
+
+        // İlk fotoğrafın varlığını doğrula
+        expect(find.byKey(const ValueKey('lookbook_image_0')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '10. SPARKS marka logosu Lookbook üzerinde sabit sağ alt katmanda yer alır',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        final logoFinder = find.text(AppConstants.appName);
+        expect(logoFinder, findsOneWidget);
+
+        // Sayfayı dikey kaydır
+        await tester.drag(find.byType(PageView), const Offset(0, -400));
+        await tester.pumpAndSettle();
+
+        // Kaydırmadan sonra da logonun sabit şekilde ekranda kaldığını doğrula
+        expect(logoFinder, findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '11. 5 sekmeli alt navigasyon çubuğu doğru sıralama, ikon ve etiketlerle görünür',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+
+        // 1. Anasayfa
+        expect(find.byKey(const ValueKey('nav_tab_home')), findsOneWidget);
+        expect(find.text(AppConstants.tabHome), findsOneWidget);
+        expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+
+        // 2. MENÜ (ikonsuz)
+        expect(find.byKey(const ValueKey('nav_tab_menu')), findsOneWidget);
+        expect(find.text(AppConstants.tabMenu), findsOneWidget);
+
+        // 3. Arama
+        expect(find.byKey(const ValueKey('nav_tab_search')), findsOneWidget);
+        expect(find.text(AppConstants.tabSearch), findsOneWidget);
+        expect(find.byIcon(Icons.search), findsOneWidget);
+
+        // 4. HESAP (ikonsuz)
+        expect(find.byKey(const ValueKey('nav_tab_account')), findsOneWidget);
+        expect(find.text(AppConstants.tabAccount), findsOneWidget);
+
+        // 5. Sepet ([ 0 ] minimal sepet badge)
+        expect(find.byKey(const ValueKey('nav_tab_cart')), findsOneWidget);
+        expect(find.text('[ 0 ]'), findsOneWidget);
+        expect(find.byIcon(Icons.shopping_bag_outlined), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '12. Lookbook üzerindeki fotoğrafa dokunulduğunda Menü sekmesine geçilir',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        // Lookbook ilk fotoğrafına dokun
+        await tester.tap(find.byKey(const ValueKey('lookbook_image_0')));
+        await tester.pumpAndSettle();
+
+        // Menü ekranının açıldığını doğrula
+        expect(find.byType(MenuScreen), findsOneWidget);
+        // Alt barın kalıcı kaldığını doğrula
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '13. Alt navigasyon sekmelerine dokunulduğunda doğru hedefler açılır ve bar kalıcıdır',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        // Arama sekmesine tıkla
+        await tester.tap(find.byKey(const ValueKey('nav_tab_search')));
+        await tester.pumpAndSettle();
+        expect(find.byType(SearchScreen), findsOneWidget);
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+
+        // Hesap sekmesine tıkla
+        await tester.tap(find.byKey(const ValueKey('nav_tab_account')));
+        await tester.pumpAndSettle();
+        expect(find.byType(AccountScreen), findsOneWidget);
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+
+        // Sepet sekmesine tıkla
+        await tester.tap(find.byKey(const ValueKey('nav_tab_cart')));
+        await tester.pumpAndSettle();
+        expect(find.byType(CartScreen), findsOneWidget);
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+
+        // Anasayfa sekmesine geri dön
+        await tester.tap(find.byKey(const ValueKey('nav_tab_home')));
+        await tester.pumpAndSettle();
+        expect(find.byType(HomeScreen), findsOneWidget);
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '14. Dar ekran boyutlarında (360x640) 5 sekmeli bar ve Lookbook taşma olmadan render edilir',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(const SparksApp());
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MainScaffold), findsOneWidget);
+        expect(find.byType(SparksBottomNavBar), findsOneWidget);
+        expect(find.byType(HomeScreen), findsOneWidget);
+      },
+    );
+  });
 }

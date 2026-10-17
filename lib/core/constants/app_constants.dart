@@ -8,11 +8,11 @@ class AppConstants {
   static const String exploreCollectionBtn = 'KOLEKSİYONU KEŞFET';
 
   // 5 Ana Navigasyon Sekmesi
-  static const String tabHome = 'ANASAYFA';
+  static const String tabHome = 'Anasayfa';
   static const String tabMenu = 'MENÜ';
-  static const String tabSearch = 'ARAMA';
+  static const String tabSearch = 'Arama';
   static const String tabAccount = 'HESAP';
-  static const String tabCart = 'SEPET';
+  static const String tabCart = 'Sepet';
 
   // Cinsiyet Başlıkları
   static const String genderWomen = 'KADIN';

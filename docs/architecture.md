@@ -232,4 +232,43 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   3. `FavoritesRepositoryImpl` (`lib/features/favorites/data/repositories/`): Somut repository; `Set<String>` ile duplikasyonu fiziksel olarak önler, önbellekleme yapar ve yerel veri kaynağına yazar.
   4. `FavoritesManager` (`lib/features/favorites/presentation/manager/`): `ChangeNotifier` tabanlı merkezi durum yöneticisi. Ekranlar `addListener` ile favori değişikliklerine abone olur; kalp butonu anlık olarak `Icons.favorite` / `Icons.favorite_border` arasında geçiş yapar.
 
+---
+
+## 9. Merkezi Sepet Yönetimi ve Favori Senkronizasyonu (Aşama 8)
+
+### 9.1. Mimari Prensipler ve Durum Yönetimi
+- **State Management:** `flutter_bloc` (`CartCubit` ve `CartState`).
+- **Veri Saklama Prensibi:**
+  - Sepet kalıcılığında yalnızca ürün kimlikleri ve adetleri saklanır: `Map<String, int>` (örn. `{"sparks-w-001": 2}`).
+  - Fiyatlar, ürün adları ve görseller sepet kalıcılığına yazılmaz; repository üzerinden güncel ürün varlıkları ile birleştirilerek dinamik `CartItemView` varlığı oluşturulur.
+  - Böylece fiyat değişiklikleri anında sepete yansır ve veri tutarsızlığı önlenir.
+- **İş Mantığı ve Kurallar:**
+  1. **İlk Ekleme:** Ürün sepette yoksa adedi `1` olarak listeye eklenir.
+  2. **Tekrar Ekleme:** Aynı ürün tekrar eklendiğinde yeni satır oluşturulmaz; mevcut satırın adedi `+1` artırılır (`quantity++`).
+  3. **Farklı Ürünler:** Farklı ürün kimlikleri bağımsız satırlar olarak sepette yer alır.
+  4. **Minimum Adet:** Adet azaltma (`decrementQuantity`) minimum `1` adede kadar indirilebilir; adet 1 iken eksiye basıldığında ürün sepetten silinmez.
+  5. **Silme İşlemi:** Ürün yalnızca çöp kutusu/silme aksiyonu ile sepetten tamamen çıkartılır (`removeProduct`).
+  6. **Tükenen Ürün Koruması:** `product.isOutOfStock == true` olan ürünler sepete eklenemez; reddedilir ve kullanıcıya hata mesajı gösterilir.
+  7. **Tümünü Temizleme:** `clearCart()` tek çağrıyla tüm sepeti sıfırlar ve boş duruma geçirir.
+
+### 9.2. Kalıcılık Katmanı (`CartLocalDataSource` & `CartRepository`)
+- **Depolama Anahtarı:** `sparks_cart_items` (SharedPreferences JSON String).
+- Favori anahtarı (`sparks_favorite_product_ids`) ile sepet anahtarı tamamen ayrı tutulur; birbirlerinin verisini etkilemez.
+- Test ortamı için `InMemoryCartLocalDataSource` çifti mevcuttur.
+
+### 9.3. Ekran ve Navigasyon Entegrasyonu
+- **Dinamik Alt Navigasyon Rozeti:**
+  - `SparksBottomNavBar` sepet sekmesi üzerinde `state.totalItemCount` değerini editoryal formatta gösterir: `[ 0 ]`, `[ 1 ]`, `[ 2 ]` vb.
+  - `MainScaffold` içerisindeki `BlocBuilder<CartCubit, CartState>` ile sepet sayacı anlık olarak güncellenir.
+- **Ürün Detay Entegrasyonu (`ProductDetailScreen`):**
+  - `SEPETE EKLE` butonu `CartCubit.addProduct(product)` fonksiyonunu tetikler ve başarı durumunda `"Ürün sepete eklendi"` bildirimini (SnackBar) gösterir.
+- **Gerçek Sepet Ekranı (`CartScreen`):**
+  - Ürün fotoğrafları, başlıkları, renk/kod bilgileri, birim ve toplam fiyatları.
+  - Adet artırma (+) ve azaltma (-) butonları, çöp kutusu ile satır silme ve üst barda "SEPETİ TEMİZLE" aksiyonu.
+  - Boş sepet durumunda editoryal mesaj ve "KATALOĞA DÖN" yönlendirme butonu.
+- **Katalog ve Arama Favori Senkronizasyonu:**
+  - `CatalogScreen` (tüm 3 görünüm modunda) ve `SearchScreen` ürün kartları üzerine kalp ikonu eklendi.
+  - Tümü `FavoritesManager` dinleyicisine bağlıdır; bir ekranda kalbe basıldığında tüm ekranlardaki kalp ikonu anında senkronize olur.
+
+
 

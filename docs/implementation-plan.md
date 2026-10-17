@@ -150,21 +150,26 @@
 
 ---
 
-## Aşama 8 — Ortak Durum Yönetimi (Sepet & Favoriler Cubit) (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Sepet ve favori durumlarını reaktif Cubit sınıflarıyla tüm ekranlar arasında senkronize etmek.
+## Aşama 8 — Merkezi Sepet Yönetimi ve Favori Senkronizasyonu
+- **Amaç:** Merkezi `CartCubit` ile sepet iş mantığını, kalıcı depolamayı (`SharedPreferences`), dinamik alt navigasyon rozetini (`[ n ]`), gerçek editoryal sepet ekranını ve katalog/arama/detay favori kalp senkronizasyonunu geliştirmek.
 - **Ön Koşullar:** Aşama 7 onayı.
-- **Yapılacak İşler:**
-  - `CartCubit` ve `FavoritesCubit` sınıflarının geliştirilmesi.
-  - Sepete ekleme mantığı: Aynı ürün eklendiğinde miktarın artırılması (`quantity++`).
-  - Alt bardaki sepet sayacının (`[ n ]`) anlık güncellenmesi.
-  - Favori kalp ikonunun katalog ve detay sayfalarında senkronize çalışması.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/cart/presentation/cubit/*`, `lib/features/favorites/presentation/cubit/*`.
-- **Test Yöntemi:** Cubit durum birim testleri (bloc_test).
-- **Tamamlanma Ölçütü:** Sepet miktarı ve favori durumu tüm ekranlarda anında güncellenir.
+- **Gerçekleştirilen İşler:**
+  - `CartCubit` & `CartState`: `flutter_bloc` tabanlı durum yönetimi (`lib/features/cart/presentation/cubit/*`).
+  - Sepet İş Kuralları: İlk eklemede adet=1, tekrar eklemede `quantity++`, farklı ürünlerde bağımsız satırlar, adet azaltmada minimum 1 (1 iken azaltma ürünü silmez), çöp kutusu ile açık satır silme (`removeProduct`), tükenen ürün koruması (`isOutOfStock == true` reddedilir), tek tıkla sepet temizleme (`clearCart`).
+  - Kalıcı Saklama: `CartLocalDataSource` & `CartRepository` ile `sparks_cart_items` JSON String depolaması; testler için `InMemoryCartLocalDataSource` (`lib/features/cart/data/*`, `lib/features/cart/domain/*`).
+  - Dinamik Görünüm: `CartItemView` varlığı repository üzerinden güncel ürün bilgileri ve hesaplanan satır toplamı ile birleştirilir.
+  - Dinamik Alt Navigasyon Rozeti: `MainScaffold` içindeki `BlocBuilder<CartCubit, CartState>` ile alt navigasyon 5. sekmesindeki rozet anlık güncellenir (`[ 0 ]`, `[ 1 ]`, `[ 2 ]` vb.).
+  - Ürün Detay Entegrasyonu: `ProductDetailScreen` üzerindeki `SEPETE EKLE` butonu `CartCubit` ile bağlanarak sepete ekler ve kullanıcıya editoryal SnackBar bildirimi sunar.
+  - Gerçek Sepet Ekranı (`CartScreen`): Editoryal kartlar, adet - / + kontrolleri, satır silme, sepeti temizleme butonu, dinamik genel toplam ve boş sepet durumu (`KATALOĞA DÖN` butonu ile).
+  - Favori Senkronizasyonu: `CatalogScreen` (tüm 3 görünüm modunda) ve `SearchScreen` ürün kartlarına kalp ikonu eklendi; `FavoritesManager` dinleyicileriyle tüm ekranlarda favori durumu anında senkronize edildi.
+  - Testler: `CartCubit` için 14 birim test (`test/features/cart/cart_cubit_test.dart`), `CartScreen` ve entegrasyonlar için 11 widget testi (`test/features/cart/cart_screen_test.dart`) yazıldı. Toplam test sayısı 102'ye ulaştı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/cart/*`, `lib/features/navigation/presentation/main_scaffold.dart`, `lib/features/product_detail/presentation/product_detail_screen.dart`, `lib/features/catalog/presentation/catalog_screen.dart`, `lib/features/search/presentation/search_screen.dart`, `lib/app/app.dart`, `test/features/cart/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (102 testin 102'si başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Sepet ekleme, adet kontrolleri, silme ve genel toplam sorunsuz çalışır; alt bardaki sayaç anında güncellenir; favoriler tüm ekranlarda senkronizedir; tüm testler yeşildir.
 
 ---
 
-## Aşama 9 — Favoriler, Hesap ve Alışverişlerim Ekranları
+## Aşama 9 — Favoriler, Hesap ve Alışverişlerim Ekranları (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Favoriler listesini, profil/hesap menüsünü ve sipariş geçmişi ekranını geliştirmek.
 - **Ön Koşullar:** Aşama 8 onayı.
 - **Yapılacak İşler:**

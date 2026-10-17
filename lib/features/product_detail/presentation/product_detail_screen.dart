@@ -6,6 +6,8 @@ import 'package:sparks/app/theme/app_spacing.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/core/utils/currency_formatter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sparks/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:sparks/features/catalog/data/datasources/product_local_data_source.dart';
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
@@ -28,6 +30,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.productId,
     this.repository,
     this.favoritesManager,
+    this.cartCubit,
     this.isFavoriteInitial = false,
     this.onFavoriteToggle,
   });
@@ -40,6 +43,9 @@ class ProductDetailScreen extends StatefulWidget {
 
   /// Test edilebilirlik ve durum yönetimi için merkezi favori yöneticisi
   final FavoritesManager? favoritesManager;
+
+  /// Test edilebilirlik ve durum yönetimi için merkezi sepet yöneticisi
+  final CartCubit? cartCubit;
 
   /// Başlangıç favori durumu (opsiyonel)
   final bool isFavoriteInitial;
@@ -586,21 +592,45 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Sepet özelliği Aşama 8\'de eklenecektir.',
+                  onPressed: () async {
+                    final cubit =
+                        widget.cartCubit ?? _tryReadCartCubit(context);
+                    final success = await cubit.addProduct(product);
+                    if (!mounted) return;
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Ürün sepete eklendi'),
+                          duration: Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
                         ),
-                        duration: Duration(seconds: 2),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            cubit.state.errorMessage ??
+                                'Ürün sepete eklenemedi.',
+                          ),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
                   },
                   child: Text('SEPETE EKLE', style: AppTextStyles.buttonText),
                 ),
         ),
       ),
     );
+  }
+
+  CartCubit _tryReadCartCubit(BuildContext context) {
+    try {
+      return context.read<CartCubit>();
+    } catch (_) {
+      return CartCubit.instance;
+    }
   }
 }

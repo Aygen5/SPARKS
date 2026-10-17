@@ -9,6 +9,7 @@ import 'package:sparks/features/catalog/data/datasources/product_local_data_sour
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
+import 'package:sparks/features/favorites/presentation/manager/favorites_manager.dart';
 
 /// SPARKS Gerçek Zamanlı Arama ve Keşif Ekranı (SearchScreen).
 ///
@@ -23,12 +24,16 @@ class SearchScreen extends StatefulWidget {
   const SearchScreen({
     super.key,
     this.repository,
+    this.favoritesManager,
     this.onProductTap,
     this.initialGender = AppConstants.genderWomen,
   });
 
   /// Test edilebilirlik için enjekte edilebilen repository örneği
   final ProductRepository? repository;
+
+  /// Test edilebilirlik için dışarıdan enjekte edilebilen FavoritesManager örneği
+  final FavoritesManager? favoritesManager;
 
   /// Ürüne dokunulduğunda çalışacak geri çağrım
   final void Function(Product product)? onProductTap;
@@ -42,6 +47,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   late final ProductRepository _repository;
+  late final FavoritesManager _favoritesManager;
   late final TextEditingController _searchController;
   late String _selectedGender;
 
@@ -58,6 +64,8 @@ class _SearchScreenState extends State<SearchScreen> {
         ProductRepositoryImpl(
           localDataSource: const ProductLocalDataSourceImpl(),
         );
+    _favoritesManager = widget.favoritesManager ?? FavoritesManager.instance;
+    _favoritesManager.addListener(_onFavoritesChanged);
     _selectedGender = widget.initialGender.trim().toUpperCase();
     _searchController = TextEditingController();
     _searchController.addListener(_onSearchInputChanged);
@@ -66,9 +74,14 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    _favoritesManager.removeListener(_onFavoritesChanged);
     _searchController.removeListener(_onSearchInputChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _fetchRecommendations() async {
@@ -357,36 +370,69 @@ class _SearchScreenState extends State<SearchScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Container(
-                  color: AppColors.editorialAnthracite,
-                  width: double.infinity,
-                  child: Image.network(
-                    product.images.first,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primaryText,
-                            ),
-                          ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        color: AppColors.editorialAnthracite,
+                        width: double.infinity,
+                        child: Image.network(
+                          product.images.first,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primaryText,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: AppColors.editorialAnthracite,
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  color: AppColors.secondaryText,
+                                ),
+                              ),
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.editorialAnthracite,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image_outlined,
-                        color: AppColors.secondaryText,
                       ),
                     ),
-                  ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                          key: ValueKey('search_favorite_${product.id}'),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(
+                            minWidth: 32,
+                            minHeight: 32,
+                          ),
+                          iconSize: 20,
+                          icon: Icon(
+                            _favoritesManager.isFavorite(product.id)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: _favoritesManager.isFavorite(product.id)
+                                ? AppColors.error
+                                : AppColors.primaryText,
+                          ),
+                          onPressed: () =>
+                              _favoritesManager.toggleFavorite(product.id),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),

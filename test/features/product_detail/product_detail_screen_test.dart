@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sparks/app/theme/app_theme.dart';
+import 'package:sparks/features/cart/data/datasources/cart_local_data_source.dart';
+import 'package:sparks/features/cart/data/repositories/cart_repository_impl.dart';
+import 'package:sparks/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
 import 'package:sparks/features/favorites/data/datasources/favorites_local_data_source.dart';
@@ -85,6 +88,7 @@ void main() {
     required String productId,
     required ProductRepository repository,
     FavoritesManager? favoritesManager,
+    CartCubit? cartCubit,
   }) {
     return MaterialApp(
       theme: AppTheme.darkTheme,
@@ -92,17 +96,19 @@ void main() {
         productId: productId,
         repository: repository,
         favoritesManager: favoritesManager,
+        cartCubit: cartCubit,
       ),
     );
   }
 
   group(
-    'Aşama 7 — Ürün Detay Sayfası (ProductDetailScreen) Widget Testleri',
+    'Aşama 7 & 8 — Ürün Detay Sayfası (ProductDetailScreen) Widget Testleri',
     () {
       late FakeDetailProductRepository fakeRepository;
       late InMemoryFavoritesLocalDataSource fakeFavDataSource;
       late FavoritesRepositoryImpl fakeFavRepo;
       late FavoritesManager testFavManager;
+      late CartCubit testCartCubit;
 
       setUp(() {
         fakeRepository = FakeDetailProductRepository(
@@ -113,6 +119,12 @@ void main() {
           localDataSource: fakeFavDataSource,
         );
         testFavManager = FavoritesManager(repository: fakeFavRepo);
+        testCartCubit = CartCubit(
+          productRepository: fakeRepository,
+          cartRepository: CartRepositoryImpl(
+            localDataSource: InMemoryCartLocalDataSource(),
+          ),
+        );
       });
 
       testWidgets(
@@ -409,13 +421,14 @@ void main() {
       );
 
       testWidgets(
-        '8. Stokta olan üründe SEPETE EKLE butonu görünür ve Aşama 8 SnackBar bildirimi verir',
+        '8. Stokta olan üründe SEPETE EKLE butonu görünür ve sepete ekleme bildirimi verir',
         (WidgetTester tester) async {
           await tester.pumpWidget(
             buildTestableWidget(
               productId: 'sparks-w-002',
               repository: fakeRepository,
               favoritesManager: testFavManager,
+              cartCubit: testCartCubit,
             ),
           );
           await tester.pumpAndSettle();
@@ -424,11 +437,10 @@ void main() {
 
           await tester.tap(find.byKey(const ValueKey('product_action_button')));
           await tester.pump();
+          await tester.pump(const Duration(milliseconds: 300));
 
-          expect(
-            find.text("Sepet özelliği Aşama 8'de eklenecektir."),
-            findsOneWidget,
-          );
+          expect(find.text('Ürün sepete eklendi'), findsOneWidget);
+          expect(testCartCubit.state.getQuantity('sparks-w-002'), 1);
         },
       );
 

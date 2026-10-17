@@ -9,6 +9,7 @@ import 'package:sparks/features/catalog/data/datasources/product_local_data_sour
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
+import 'package:sparks/features/favorites/presentation/manager/favorites_manager.dart';
 
 /// SPARKS Ürün Kataloğu Ekranı (CatalogScreen).
 ///
@@ -27,6 +28,7 @@ class CatalogScreen extends StatefulWidget {
     this.gender = AppConstants.genderWomen,
     this.category = '',
     this.repository,
+    this.favoritesManager,
     this.onProductTap,
     this.initialViewMode = 2,
   });
@@ -39,6 +41,9 @@ class CatalogScreen extends StatefulWidget {
 
   /// Test edilebilirlik için dışarıdan enjekte edilebilen repository örneği
   final ProductRepository? repository;
+
+  /// Test edilebilirlik için dışarıdan enjekte edilebilen FavoritesManager örneği
+  final FavoritesManager? favoritesManager;
 
   /// Ürüne dokunulduğunda çalışacak geri çağrım (Test veya özel yönlendirmeler için)
   final void Function(Product product)? onProductTap;
@@ -62,6 +67,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
   String? _errorMessage;
   List<Product> _allGenderProducts = [];
 
+  late final FavoritesManager _favoritesManager;
+
   // Sabit editoryal yatay kategori etiketleri
   static const List<String> _basePills = [
     'TÜMÜNÜ GÖR',
@@ -81,12 +88,24 @@ class _CatalogScreenState extends State<CatalogScreen> {
         ProductRepositoryImpl(
           localDataSource: const ProductLocalDataSourceImpl(),
         );
+    _favoritesManager = widget.favoritesManager ?? FavoritesManager.instance;
+    _favoritesManager.addListener(_onFavoritesChanged);
     _selectedGender = widget.gender.trim().toUpperCase();
     _selectedCategory = widget.category.trim().isNotEmpty
         ? widget.category.trim()
         : null;
     _viewMode = widget.initialViewMode;
     _fetchProducts();
+  }
+
+  @override
+  void dispose() {
+    _favoritesManager.removeListener(_onFavoritesChanged);
+    super.dispose();
+  }
+
+  void _onFavoritesChanged() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _fetchProducts() async {
@@ -620,6 +639,26 @@ class _CatalogScreenState extends State<CatalogScreen> {
     }
   }
 
+  Widget _buildFavoriteButton(Product product, {bool mini = false}) {
+    final isFav = _favoritesManager.isFavorite(product.id);
+    return Material(
+      color: Colors.transparent,
+      child: IconButton(
+        key: ValueKey('catalog_favorite_${product.id}'),
+        padding: EdgeInsets.zero,
+        constraints: mini
+            ? const BoxConstraints(minWidth: 24, minHeight: 24)
+            : const BoxConstraints(minWidth: 32, minHeight: 32),
+        iconSize: mini ? 16 : 20,
+        icon: Icon(
+          isFav ? Icons.favorite : Icons.favorite_border,
+          color: isFav ? AppColors.error : AppColors.primaryText,
+        ),
+        onPressed: () => _favoritesManager.toggleFavorite(product.id),
+      ),
+    );
+  }
+
   /// Görünüm 1: Büyük Editoryal Tek Sütun
   Widget _buildMode1LargeEditorial(List<Product> products) {
     return ListView.separated(
@@ -641,35 +680,47 @@ class _CatalogScreenState extends State<CatalogScreen> {
               // Büyük Editoryal Görsel
               AspectRatio(
                 aspectRatio: 3 / 4,
-                child: Container(
-                  color: AppColors.editorialAnthracite,
-                  child: Image.network(
-                    product.images.first,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primaryText,
-                            ),
-                          ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        color: AppColors.editorialAnthracite,
+                        child: Image.network(
+                          product.images.first,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primaryText,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: AppColors.editorialAnthracite,
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  color: AppColors.secondaryText,
+                                ),
+                              ),
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.editorialAnthracite,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image_outlined,
-                        color: AppColors.secondaryText,
                       ),
                     ),
-                  ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _buildFavoriteButton(product),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -758,36 +809,48 @@ class _CatalogScreenState extends State<CatalogScreen> {
             children: [
               // Ürün Görseli
               Expanded(
-                child: Container(
-                  color: AppColors.editorialAnthracite,
-                  width: double.infinity,
-                  child: Image.network(
-                    product.images.first,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primaryText,
-                            ),
-                          ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        color: AppColors.editorialAnthracite,
+                        width: double.infinity,
+                        child: Image.network(
+                          product.images.first,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 1.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    AppColors.primaryText,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: AppColors.editorialAnthracite,
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.broken_image_outlined,
+                                  color: AppColors.secondaryText,
+                                ),
+                              ),
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.editorialAnthracite,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image_outlined,
-                        color: AppColors.secondaryText,
                       ),
                     ),
-                  ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: _buildFavoriteButton(product),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -856,33 +919,44 @@ class _CatalogScreenState extends State<CatalogScreen> {
           onTap: () => _handleProductTap(product),
           child: Container(
             color: AppColors.editorialAnthracite,
-            child: Image.network(
-              product.images.first,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, progress) {
-                if (progress == null) return child;
-                return const Center(
-                  child: SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.0,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryText,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.network(
+                    product.images.first,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return const Center(
+                        child: SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.0,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primaryText,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: AppColors.editorialAnthracite,
+                      alignment: Alignment.center,
+                      child: const Icon(
+                        Icons.broken_image_outlined,
+                        size: 16,
+                        color: AppColors.secondaryText,
                       ),
                     ),
                   ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.editorialAnthracite,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.broken_image_outlined,
-                  size: 16,
-                  color: AppColors.secondaryText,
                 ),
-              ),
+                Positioned(
+                  top: 2,
+                  right: 2,
+                  child: _buildFavoriteButton(product, mini: true),
+                ),
+              ],
             ),
           ),
         );

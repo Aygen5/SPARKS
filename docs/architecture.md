@@ -353,6 +353,25 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   2. `Authentication -> Sign-in method` sekmesinde `Email/Password` sağlayıcısının etkinleştirilmesi,
   3. `flutterfire configure` komutuyla platform yapılandırmalarının (`firebase_options.dart`) projeye dahil edilmesi gerekmektedir.
 
+### 12.3. Login, Register Tasarımı ve Sayfa Geçiş Mimarisi (Aşama 12)
+- **Tasarım Dili ve Monokromatik Estetik:**
+  - SPARKS editoryal moda kimliğine uygun olarak saf siyah zemin (`AppColors.shoppingBackground`), beyaz tipografi (`AppColors.primaryText`) ve `BorderRadius.zero` keskin kutu sınırları.
+  - Görsel referanslardaki tasarım hiyerarşisi korunarak, sahte sosyal medya butonları (Apple/Google/Facebook vb.) projeye dahil edilmemiş; saf e-posta/şifre akışı dürüstçe uygulanmıştır.
+- **Ana Sayfa Giriş Butonu Entegrasyonu (`HomeScreen`):**
+  - Ekranın sağ üst köşesinde, safe area sınırlarına uygun editoryal `GİRİŞ YAP` aksiyon butonu (`home_login_button`).
+  - `BlocBuilder<AuthCubit, AuthState>` ile oturum durumuna reaktif olarak bağlıdır; kullanıcı giriş yaptığında otomatik olarak gizlenir.
+- **Aşağıdan Yukarı Dikey Geçiş Animasyonu:**
+  - `AppRouter` içerisinde `/login` ve `/register` rotaları `CustomTransitionPage` ve `SlideTransition` ile yapılandırılmıştır.
+  - Geçiş: `Offset(0.0, 1.0) -> Offset.zero`, `Curves.easeOutCubic` eğrisiyle akıcı ve editoryal bir tam ekran açılışı sağlar.
+- **Giriş Ekranı (`LoginScreen`):**
+  - E-posta format kontrolü, şifre maskeleme/görünürlük toggle aksiyonu (`login_password_toggle`), beni hatırla seçeneği ve şifremi unuttum akışı.
+  - Hatalı giriş durumunda Türkçe açıklayıcı hata bannerı (`login_error_banner`).
+- **Kayıt Ol Ekranı (`RegisterScreen`):**
+  - Ad Soyad (`register_name_input`), e-posta (`register_email_input`), şifre (`register_password_input`) ve şifre tekrarı (`register_password_repeat_input`).
+  - Şifre eşleşme ve minimum karakter doğrulamaları.
+  - Kullanım Koşulları ve Gizlilik Politikası onay kutusu (`register_terms_checkbox`).
+  - Başarılı kayıtta `AuthCubit.signUp` tetiklenir ve kullanıcı otomatik olarak oturum açmış duruma geçer.
+
 
 
 

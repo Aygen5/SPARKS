@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sparks/app/router/app_router.dart';
 import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_spacing.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
@@ -78,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (context.canPop()) {
       context.pop();
     } else {
-      context.go('/home');
+      context.go(AppRoutes.home);
     }
   }
 
@@ -86,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (widget.onRegisterTap != null) {
       widget.onRegisterTap!();
     } else {
-      context.push('/register');
+      context.push(AppRoutes.register);
     }
   }
 

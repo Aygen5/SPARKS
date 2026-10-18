@@ -46,3 +46,13 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Firebase Credentials & Secrets (Security Protection)
+lib/firebase_options.dart
+firebase.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+*.env
+*.env.*
+*.secret

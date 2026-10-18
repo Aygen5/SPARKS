@@ -260,19 +260,34 @@
 
 ---
 
-## Aşama 13 — Oturum ve Uygulama Entegrasyonu (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Kayıt sonrası otomatik giriş, uygulama yeniden açıldığında oturumun korunması, çıkış yapma ve Hesabım ekranının gerçek kullanıcı durumuna uyarlanması. Mevcut favori ve sepet işleyişini bozmadan entegre etmek.
+## Aşama 13 — Oturum ve Uygulama Entegrasyonu (TAMAMLANDI)
+- **Amaç:** Uygulama genelinde oturum yönetimi, `SparksApp` kök sağlayıcısı, `main.dart` başlangıç oturum kontrolü, dinamik `AccountScreen` misafir/üye durumları, çıkış yapma aksiyonu ve yerel veri bağımsızlığını geliştirmek.
 - **Ön Koşullar:** Aşama 12 onayı.
-- **Yapılacak İşler:**
-  - Hesabım (`AccountScreen`) ekranının dinamik kullanıcı adına ve e-postasına göre güncellenmesi; oturum kapatma (`ÇIKIŞ YAP`) aksiyonu.
-  - Uygulama başlangıcında oturum kontrolü.
-  - Favori ve sepet verilerinin kullanıcı oturumuyla uyumlu çalışması.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/account/presentation/account_screen.dart`, `lib/main.dart`.
-- **Test Yöntemi:** Entegrasyon ve widget testleri.
+- **Gerçekleştirilen İşler:**
+  - `SparksApp` (`lib/app/app.dart`): `MultiBlocProvider` ile hem `CartCubit` hem de `AuthCubit` kök widget ağacına sağlandı.
+  - Başlangıç Oturum Kontrolü (`lib/main.dart`): `AuthCubit.instance.checkAuthStatus()` başlatıldı; kontrol esnasında misafir kullanıcının gezinme akışı korunarak gereksiz login zorlaması engellendi.
+  - Dinamik `AccountScreen` (`lib/features/account/presentation/account_screen.dart`):
+    - Misafir kullanıcı için `account_guest_card`, `account_login_button` ("GİRİŞ YAP") ve `account_register_button` ("KAYIT OL") aksiyonları.
+    - Giriş yapmış kullanıcı için `account_user_card`, gerçek e-posta adresi (`account_user_email`), formatlı ad soyad ve `account_logout_button` ("ÇIKIŞ YAP").
+    - Çıkış işleminde editoryal onay dialogu (`account_logout_confirm_dialog`) ve anında misafir kartına geçiş.
+    - Favorilerim, Alışverişlerim ve Sepetim kısayolları her iki durumda da kesintisiz çalışır.
+  - Navigasyon İyileştirmeleri:
+    - Başarılı giriş ve kayıt sonrası ana alışverişe (`AppRoutes.home` veya pop) geçiş.
+    - Kayıt sonrasında tekrar Login ekranına yönlendirme yapılmaması (otomatik oturum açma).
+    - `isLoading` kontrolü ile formlarda çift tıklama ve mükerrer isteklerin önlenmesi.
+    - Auth durumu değiştiğinde yerel sepet ve favorilerin bağımsız kalması.
+  - Testler:
+    - `test/features/auth/auth_session_test.dart` (6 birim/widget testi).
+    - `test/features/account/account_screen_test.dart` (11 widget testi).
+    - `test/features/auth/stage_13_navigation_test.dart` (6 entegrasyon testi).
+    - Toplam test sayısı 184'e yükseltildi ve tümü başarıyla tamamlandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/app/app.dart`, `lib/main.dart`, `lib/features/account/presentation/account_screen.dart`, `lib/features/auth/presentation/login_screen.dart`, `lib/features/auth/presentation/register_screen.dart`, `test/features/auth/auth_session_test.dart`, `test/features/account/account_screen_test.dart`, `test/features/auth/stage_13_navigation_test.dart`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (184 testin 184'ü başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Oturum durumu uygulama genelinde reaktif ve kalıcıdır; Hesabım ekranı misafir ve üye durumlarına anında adapte olur; sepet ve favoriler bağımsızlığını korur; tüm testler yeşildir.
 
 ---
 
-## Aşama 14 — Testler, Erişilebilirlik ve Son Kontroller (BEKLEMEDE)
+## Aşama 14 — Testler, Erişilebilirlik ve Son Kontroller (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Giriş/kayıt hataları, doğrulama, oturum yönetimi, ekran animasyonları, küçük ekranlar, önceki testler ve web derlemesini doğrulayıp nihai teslimi gerçekleştirmek.
 - **Ön Koşullar:** Aşama 13 onayı.
 - **Yapılacak İşler:**

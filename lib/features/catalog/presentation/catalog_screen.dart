@@ -9,6 +9,7 @@ import 'package:sparks/features/catalog/data/datasources/product_local_data_sour
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
+import 'package:sparks/core/widgets/sparks_image.dart';
 import 'package:sparks/features/favorites/presentation/manager/favorites_manager.dart';
 
 /// SPARKS Ürün Kataloğu Ekranı (CatalogScreen).
@@ -683,36 +684,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Container(
-                        color: AppColors.editorialAnthracite,
-                        child: Image.network(
-                          product.images.first,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, progress) {
-                            if (progress == null) return child;
-                            return const Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.primaryText,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                color: AppColors.editorialAnthracite,
-                                alignment: Alignment.center,
-                                child: const Icon(
-                                  Icons.broken_image_outlined,
-                                  color: AppColors.secondaryText,
-                                ),
-                              ),
-                        ),
+                      child: SparksImage(
+                        imageUrl: product.images.first,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Positioned(
@@ -812,37 +786,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Container(
-                        color: AppColors.editorialAnthracite,
-                        width: double.infinity,
-                        child: Image.network(
-                          product.images.first,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, progress) {
-                            if (progress == null) return child;
-                            return const Center(
-                              child: SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 1.5,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.primaryText,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                color: AppColors.editorialAnthracite,
-                                alignment: Alignment.center,
-                                child: const Icon(
-                                  Icons.broken_image_outlined,
-                                  color: AppColors.secondaryText,
-                                ),
-                              ),
-                        ),
+                      child: SparksImage(
+                        imageUrl: product.images.first,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Positioned(
@@ -922,33 +868,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.network(
-                    product.images.first,
+                  child: SparksImage(
+                    imageUrl: product.images.first,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(
-                        child: SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.0,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primaryText,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: AppColors.editorialAnthracite,
-                      alignment: Alignment.center,
-                      child: const Icon(
-                        Icons.broken_image_outlined,
-                        size: 16,
-                        color: AppColors.secondaryText,
-                      ),
-                    ),
                   ),
                 ),
                 Positioned(

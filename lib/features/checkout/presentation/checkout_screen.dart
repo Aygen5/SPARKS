@@ -5,6 +5,7 @@ import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_spacing.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/core/utils/currency_formatter.dart';
+import 'package:sparks/core/widgets/sparks_image.dart';
 import 'package:sparks/features/cart/domain/entities/cart_item_view.dart';
 import 'package:sparks/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:sparks/features/cart/presentation/cubit/cart_state.dart';
@@ -279,19 +280,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 64,
             child: AspectRatio(
               aspectRatio: 3 / 4,
-              child: Container(
-                color: AppColors.editorialAnthracite,
-                child: Image.network(
-                  product.images.first,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: AppColors.secondaryText,
-                      size: 20,
-                    ),
-                  ),
-                ),
+              child: SparksImage(
+                imageUrl: product.images.first,
+                fit: BoxFit.cover,
               ),
             ),
           ),

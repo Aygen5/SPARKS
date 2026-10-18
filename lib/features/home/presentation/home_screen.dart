@@ -7,6 +7,7 @@ import 'package:sparks/app/theme/app_spacing.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/core/constants/app_images.dart';
+import 'package:sparks/core/widgets/sparks_image.dart';
 import 'package:sparks/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:sparks/features/auth/presentation/cubit/auth_state.dart';
 
@@ -213,45 +214,24 @@ class _LookbookImageItem extends StatelessWidget {
           Container(color: AppColors.editorialAnthracite),
 
           // Editoryal Yüksek Moda Fotoğrafı (BoxFit.cover ile alanı doldurur)
-          Image.network(
-            imageUrl,
+          SparksImage(
+            imageUrl: imageUrl,
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                color: AppColors.editorialAnthracite,
-                child: const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryText,
-                      ),
-                    ),
-                  ),
+            fallbackWidget: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.editorialBrown,
+                    AppColors.editorialAnthracite,
+                    AppColors.shoppingBackground,
+                  ],
                 ),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              // Ağ hatası durumunda editoryal degrade fallback'i
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.editorialBrown,
-                      AppColors.editorialAnthracite,
-                      AppColors.shoppingBackground,
-                    ],
-                  ),
-                ),
-              );
-            },
+              ),
+            ),
           ),
         ],
       ),

@@ -68,6 +68,7 @@ flutter:
   assets:
     - assets/data/products.json
     - lib/data/catalog/products.json
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

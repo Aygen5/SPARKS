@@ -330,6 +330,30 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   - "ÖNEMLİ BİLGİLENDİRME" kutusu ile SPARKS ödeme ve canlı sipariş altyapısının henüz aktif olmadığı şeffafça ifade edilir.
   - "SİPARİŞİ TAMAMLA" butonu kullanıcıya ödeme altyapısının geliştirilme aşamasında olduğunu dürüstçe bildirir.
 
+---
+
+## 12. Kimlik Doğrulama Altyapısı ve Oturum Yönetimi (Aşama 11)
+
+### 12.1. Mimari Prensipler ve Bağımlılık İzolasyonu
+- **Domain Katmanı:**
+  - `AppUser`: Firebase'in `User` nesnesini izole eden, UI ve iş mantığı için temiz entity modeli (`id`, `email`, `displayName`, `isEmailVerified`, `formattedName`).
+  - `AuthRepository`: Oturum akışını (`authStateChanges`), geçerli kullanıcıyı (`currentUser`), kayıt, giriş, çıkış, parola sıfırlama ve e-posta doğrulama sözleşmelerini tanımlar.
+  - `AuthException`: Kullanıcıya sunulacak açıklayıcı Türkçe hata mesajı (`message`) ve sistem kodunu (`code`) taşır.
+- **Data Katmanı:**
+  - `AuthErrorMapper`: Firebase hata kodlarını (`user-not-found`, `wrong-password`, `invalid-credential`, `email-already-in-use`, `weak-password` vb.) kullanıcı dostu Türkçe metinlere dönüştürür.
+  - `AuthRepositoryImpl`: `FirebaseAuth` ile konuşur. Firebase henüz initialize edilmemişse veya test ortamındaysa uygulamanın çökmesini engeller, güvenli fallback ve açıklayıcı hata yönetimi sunar.
+- **Presentation Katmanı:**
+  - `AuthState`: Tek merkezli durum modeli (`AuthStatus.initial`, `unauthenticated`, `loading`, `authenticated`, `error`), `user` ve `errorMessage`.
+  - `AuthCubit`: `authStateChanges` akışını otomatik dinler, tek doğruluk kaynağı (Single Source of Truth) olarak kayıt, giriş ve çıkış durumlarını yönetir.
+
+### 12.2. Firebase Yapılandırması ve Kurulum Gereksinimi
+- Uygulamada sahte oturum açmış gibi yanıltıcı davranışlar engellenmiştir.
+- Gerçek Firebase bağlantısı için:
+  1. Firebase Console üzerinden `SPARKS` projesinin oluşturulması,
+  2. `Authentication -> Sign-in method` sekmesinde `Email/Password` sağlayıcısının etkinleştirilmesi,
+  3. `flutterfire configure` komutuyla platform yapılandırmalarının (`firebase_options.dart`) projeye dahil edilmesi gerekmektedir.
+
+
 
 
 

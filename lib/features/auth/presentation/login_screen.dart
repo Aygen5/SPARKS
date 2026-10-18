@@ -94,15 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleForgotPassword(AuthCubit cubit) async {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Lütfen önce e-posta adresinizi yukarıdaki alana giriniz.',
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Lütfen önce e-posta adresinizi yukarıdaki alana giriniz.',
+            ),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
           ),
-          duration: Duration(seconds: 3),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        );
       return;
     }
 
@@ -110,15 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (sent) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '$email adresine parola sıfırlama bağlantısı gönderildi.',
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              '$email adresine parola sıfırlama bağlantısı gönderildi.',
+            ),
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
           ),
-          duration: const Duration(seconds: 4),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        );
     }
   }
 
@@ -377,48 +381,55 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: Checkbox(
-                                  key: const ValueKey(
-                                    'login_remember_me_checkbox',
-                                  ),
-                                  value: _rememberMe,
-                                  activeColor: AppColors.primaryText,
-                                  checkColor: AppColors.shoppingBackground,
-                                  side: const BorderSide(
-                                    color: AppColors.dividerLight,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.zero,
-                                  ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      _rememberMe = val ?? false;
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.xs),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _rememberMe = !_rememberMe;
-                                  });
-                                },
-                                child: Text(
-                                  'Beni Hatırla',
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.secondaryText,
+                          Flexible(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Checkbox(
+                                    key: const ValueKey(
+                                      'login_remember_me_checkbox',
+                                    ),
+                                    value: _rememberMe,
+                                    activeColor: AppColors.primaryText,
+                                    checkColor: AppColors.shoppingBackground,
+                                    side: const BorderSide(
+                                      color: AppColors.dividerLight,
+                                    ),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _rememberMe = val ?? false;
+                                      });
+                                    },
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: AppSpacing.xs),
+                                Flexible(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _rememberMe = !_rememberMe;
+                                      });
+                                    },
+                                    child: Text(
+                                      'Beni Hatırla',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.secondaryText,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: AppSpacing.xs),
                           TextButton(
                             key: const ValueKey('login_forgot_password_button'),
                             style: TextButton.styleFrom(

@@ -287,11 +287,21 @@
 
 ---
 
-## Aşama 14 — Testler, Erişilebilirlik ve Son Kontroller (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Giriş/kayıt hataları, doğrulama, oturum yönetimi, ekran animasyonları, küçük ekranlar, önceki testler ve web derlemesini doğrulayıp nihai teslimi gerçekleştirmek.
+## Aşama 14 — Testler, Erişilebilirlik ve Son Kontroller (TAMAMLANDI)
+- **Amaç:** Giriş/kayıt form validasyonları, hata yönetimi, oturum entegrasyonu, küçük ekran (360x640) uyumu, uygulama geneli regresyon ve güvenlik doğrulamalarını tamamlayarak nihai teslimi gerçekleştirmek.
 - **Ön Koşullar:** Aşama 13 onayı.
-- **Yapılacak İşler:**
-  - `dart analyze` sıfır sorun denetimi.
-  - Dar ekran (360x640) taşma denetimleri.
-  - `flutter build web` derleme doğrulaması.
-  - Kapsamlı teslim raporu.
+- **Gerçekleştirilen İşler:**
+  - `LoginScreen` ve `RegisterScreen` form kontrolleri, e-posta formatı, şifre gizleme/gösterme, şifre eşleşmesi, kullanım koşulları denetimleri.
+  - Şifremi Unuttum akışı ve `hideCurrentSnackBar()` ile akıcı bildirim yönetimi.
+  - `LoginScreen` üzerinde 360x640 dar ekran ve klavye açılma simülasyonundaki 38 piksellik yatay taşma sorunu `Flexible` ile çözüldü.
+  - `AuthErrorMapper` üzerinden tüm Firebase hata kodlarının kullanıcı dostu Türkçe mesajlara dönüştürülmesinin doğrulanması.
+  - `checkAuthStatus()` oturum geri yükleme, hata durumunda çökmeden misafir moduna geçiş.
+  - Kullanıcı giriş/çıkış yaptığında sepet (`CartCubit`) ve favorilerin (`FavoritesManager`) sıfırlanmadığı, veri bağımsızlığının korunduğu regresyon testleriyle kanıtlandı.
+  - Parola ve token loglanmadığı, canlı Firebase başlatılmamışken `firebase-not-configured` istisnasının güvenle fırlatıldığı doğrulandı.
+  - Testler:
+    - `test/features/auth/stage_14_auth_flows_test.dart` (10 yeni test).
+    - `test/stage_14_app_regression_test.dart` (7 yeni test).
+    - Toplam test sayısı 184'ten 201'e yükseltildi ve tümü başarıyla tamamlandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/auth/presentation/login_screen.dart`, `test/features/auth/stage_14_auth_flows_test.dart`, `test/stage_14_app_regression_test.dart`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (201 testin 201'i başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Kimlik doğrulama akışı, hata mesajları, küçük ekran duyarlılığı ve uygulama geneli regresyon testleri eksiksizdir; güvenlik kuralları tamdır; tüm 201 test yeşildir.

@@ -397,6 +397,30 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
 - `isLoading` denetimleri ile formlarda mükerrer istekler ve çift tıklamalar engellenmiştir.
 - Kullanıcı giriş yaptığında veya çıkış yaptığında cihazdaki yerel sepet (`CartCubit`) ve favori (`FavoritesManager`) verileri sıfırlanmaz veya bozulmaz; yerel kalıcılık bağımsız olarak çalışır.
 
+---
+
+## 14. Auth Kalite, Küçük Ekran Uyumu, Regresyon ve Güvenlik Doğrulamaları (Aşama 14)
+
+### 14.1. Kapsamlı Auth Form ve Hata Yönetimi Doğrulaması
+- **Login ve Register Form Doğrulamaları:** Zorunlu alan denetimleri, regex tabanlı e-posta kontrolü, ad soyad asgari uzunluk kontrolü, asgari 6 karakter şifre denetimi, şifre tekrarı uyuşmazlığı ve yasal koşul onay kutusu.
+- **Şifremi Unuttum Akışı:** E-posta girilmediğinde kayan bilgilendirme mesajı; geçerli e-postada `sendPasswordResetEmail` çağrısı ve başarılı bildirim akışı.
+- **Kullanıcı Dostu Hata Eşleme (`AuthErrorMapper`):** Firebase hata kodları (`user-not-found`, `wrong-password`, `invalid-credential`, `too-many-requests`, `email-already-in-use`, `weak-password`, `operation-not-allowed`, `network-request-failed` vb.) editoryal ve açık Türkçe mesajlara çevrilerek hata bannerı ve snackbar ile gösterilir.
+- **Yinelenen İstek Koruması:** `isLoading` bayrağı aktifken butonlar kilitlenir; mükerrer auth istekleri ve çift dokunmalar engellenir.
+
+### 14.2. Dar Ekran (360x640) ve Klavye Uyumluluğu
+- `LoginScreen` ve `RegisterScreen` bileşenleri `SingleChildScrollView` ve `SafeArea` yapıları ile dar ekranlarda (360x640) ve sanal klavye açılma simülasyonunda (360x390) sıfır piksel taşmasıyla (0 overflow) render edilir.
+- Yatay satır elemanları (`Beni Hatırla` & `Şifremi Unuttum?`) `Flexible` yapılarıyla küçük ekranlarda taşmaya karşı korunmuştur.
+
+### 14.3. Regresyon ve Veri Bağımsızlığı Güvencesi
+- Kullanıcı misafir modunda ürünleri sepete ekleyip (`CartCubit`) favoriledikten (`FavoritesManager`) sonra sisteme giriş yaptığında veya çıkış yaptığında yerel sepet kalemleri, ürün adetleri ve favorileri aynen korunur.
+- Ana Sayfa (`HomeScreen`), Lookbook dikey geçişi, Menü kategorileri, Arama, 3'lü katalog görünümü ve Checkout adımları tam regresyon güvencesi altındadır.
+
+### 14.4. Güvenlik ve Üretim Sınırları
+- Parola, token veya gizli kimlik bilgileri asla `print` veya debug loglarına aktarılmaz.
+- Canlı Firebase bağlantısı henüz kurulmamış ortamlarda `AuthRepositoryImpl` kontrollü `firebase-not-configured` istisnası fırlatır; çökme yaşanmaz.
+- Test ortamlarındaki test doubles (sahte repolar) üretim koduna sızmaz; üretim kökünde Firebase altyapısı güvenle hazır bekletilir.
+
+
 
 
 

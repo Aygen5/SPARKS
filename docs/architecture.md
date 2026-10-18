@@ -270,5 +270,40 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   - `CatalogScreen` (tüm 3 görünüm modunda) ve `SearchScreen` ürün kartları üzerine kalp ikonu eklendi.
   - Tümü `FavoritesManager` dinleyicisine bağlıdır; bir ekranda kalbe basıldığında tüm ekranlardaki kalp ikonu anında senkronize olur.
 
+---
+
+## 10. Favoriler, Hesabım ve Alışverişlerim Mimarisi (Aşama 9)
+
+### 10.1. Gerçek Favoriler Ekranı (`FavoritesScreen`)
+- **Veri Akışı:**
+  `FavoritesScreen` -> `FavoritesManager` (kayıtlı kimlikler kümesi) -> `ProductRepository.getProductById(id)` -> Gerçek ürün varlıkları.
+- **Senkronizasyon:**
+  - `FavoritesManager`'a doğrudan `ChangeNotifier` dinleyicisi (`addListener`) ile bağlanır.
+  - Başka bir ekrandan (katalog, arama, detay) favori eklendiğinde veya çıkarıldığında anında ekrana yansır.
+  - `FavoritesScreen` üzerinde kalp ikonuna basıldığında ürün anında listeden silinir (`_favoritesManager.removeFavorite(id)`).
+- **Durum Yönetimi:**
+  - Yüklenme: Editoryal minimalist yükleme spinner'ı.
+  - Hata: Kullanıcı dostu hata bildirimi ve `TEKRAR DENE` aksiyon butonu.
+  - Boş Durum: Minimalist kalp ikonu, `FAVORİ LİSTENİZ BOŞ` başlığı ve `KATALOĞA DÖN` eylem butonu.
+- **Navigasyon:** Ürün kartına dokunulduğunda doğrudan `/product/:id` rotasına gidilir; geri dönüldüğünde liste senkronize kalır.
+
+### 10.2. Hesabım Ekranı (`AccountScreen`) ve Misafir Kullanıcı Deneyimi
+- **Kimlik Doğrulama Sınırları ve Dürüstlük:**
+  - Projede henüz gerçek bir backend, oturum yönetimi veya auth servisi bulunmamaktadır.
+  - Sahte profil, uydurma kullanıcı adı veya çalışmayan butonlar üretilmemiştir.
+  - Misafir kullanıcı deneyimi (`MİSAFİR KULLANICI`) açık ve şeffaf bir dille sunulur; giriş/üyelik servisinin henüz aktif olmadığı belirtilir.
+- **Fonksiyonel Editoryal Kısayollar:**
+  - `FAVORİLERİM` -> `/favorites` (`FavoritesScreen`)
+  - `ALIŞVERİŞLERİM` -> `/account/orders` (`OrdersScreen`)
+  - `SEPETİM` -> `/cart` (`CartScreen`)
+- **Doğrulanabilir Destek Alanı:** Sürüm bilgisi (`SPARKS v1.0.0`), marka sloganı ve müşteri destek e-postası (`destek@sparks.fashion`).
+
+### 10.3. Alışverişlerim Ekranı (`OrdersScreen`)
+- **Sipariş Altyapısı Sınırları:**
+  - Gerçek sipariş/ödeme API'si bulunmadığından sahte sipariş veya uydurma sipariş numaraları kesinlikle üretilmez; sepetteki ürünler sipariş gibi gösterilmez.
+  - Kullanıcıya tamamlanmış bir sipariş kaydı bulunmadığı ve sipariş geçmişi için sipariş altyapısının gerektiği net bir dille aktarılır (`HENÜZ BİR SİPARİŞİNİZ YOK`).
+- **Aksiyonlar:** `KATALOĞA DÖN` (`/menu`) ve `SEPETE GİT` (`/cart`) yönlendirmeleri.
+
+
 
 

@@ -169,20 +169,22 @@
 
 ---
 
-## Aşama 9 — Favoriler, Hesap ve Alışverişlerim Ekranları (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Favoriler listesini, profil/hesap menüsünü ve sipariş geçmişi ekranını geliştirmek.
+## Aşama 9 — Favoriler, Hesabım ve Alışverişlerim Ekranları
+- **Amaç:** Mevcut merkezi favori ve sepet sistemlerini bozmadan Favoriler (`FavoritesScreen`), Hesabım (`AccountScreen`) ve Alışverişlerim (`OrdersScreen`) ekranlarını gerçek proje mimarisine entegre etmek.
 - **Ön Koşullar:** Aşama 8 onayı.
-- **Yapılacak İşler:**
-  - Favoriler ekranı: İki sütunlu ürün kartları, favoriden çıkarma, sepete aktarma.
-  - Hesap ekranı: SPARKS QR, YARDIM, AYARLAR, 3 ürünlü favori şeridi ve 3 maddelik editoryal liste.
-  - Alışverişlerim ekranı: ONLINE ve MAĞAZA sekmeleri, 2 adet referans sipariş kaydı (tarih, tutar, ürün görselleri).
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/favorites/presentation/*`, `lib/features/account/presentation/*`, `lib/features/orders/presentation/*`.
-- **Test Yöntemi:** Navigasyon ve sipariş geçmişi widget testleri.
-- **Tamamlanma Ölçütü:** Favoriler listelenir; hesap ve sipariş geçmişi ekranları editoryal estetikle çalışır.
+- **Gerçekleştirilen İşler:**
+  - `FavoritesScreen`: Merkezi `FavoritesManager` ve `ProductRepository` ile entegre, anlık favori senkronizasyonu, kalp ile listeden çıkarma, ürün detayına (`/product/:id`) yönlendirme, editoryal boş durum (`KATALOĞA DÖN`) ve hata/tekrar deneme yönetimi (`lib/features/favorites/presentation/favorites_screen.dart`).
+  - `AccountScreen`: Gerçek backend/auth olmadığından sahte kullanıcı üretilmeden misafir kullanıcı deneyimi (`MİSAFİR KULLANICI`), dürüst bilgilendirme ve çalışan editoryal kısayollar (`FAVORİLERİM` -> `/favorites`, `ALIŞVERİŞLERİM` -> `/account/orders`, `SEPETİM` -> `/cart`) ve destek alanı (`lib/features/account/presentation/account_screen.dart`).
+  - `OrdersScreen`: Gerçek sipariş altyapısı bulunmadığından sahte sipariş veya uydurma numaralar üretmeden dürüst ve net Türkçe boş durum (`HENÜZ BİR SİPARİŞİNİZ YOK`) ve yönlendirmeler (`KATALOĞA DÖN`, `SEPETE GİT`) (`lib/features/orders/presentation/orders_screen.dart`).
+  - Navigasyon: GoRouter üzerinde `/favorites` ve `/account/orders` rotaları eklendi; mevcut 5 sekme ve sepet rozeti korundu (`lib/app/router/app_router.dart`).
+  - Testler: Favoriler ekranı için 7 test (`test/features/favorites/favorites_screen_test.dart`), Hesabım ekranı için 8 test (`test/features/account/account_screen_test.dart`), Alışverişlerim ekranı için 5 test (`test/features/orders/orders_screen_test.dart`), Navigasyon geçişleri için 3 test (`test/features/navigation/stage_9_navigation_test.dart`) yazıldı. Toplam test sayısı 125'e ulaştı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/favorites/presentation/favorites_screen.dart`, `lib/features/account/presentation/account_screen.dart`, `lib/features/orders/presentation/orders_screen.dart`, `lib/app/router/app_router.dart`, `test/features/favorites/*`, `test/features/account/*`, `test/features/orders/*`, `test/features/navigation/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (125 testin 125'i başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Favoriler, hesap ve sipariş geçmişi ekranları editoryal estetikle çalışır; sahte veri üretilmemiştir; tüm testler yeşildir.
 
 ---
 
-## Aşama 10 — Sepet Ekranı ve Tamamlayıcı Etkileşimler
+## Aşama 10 — Sepet Ekranı ve Tamamlayıcı Etkileşimler (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Dinamik sepet ekranını, miktar kontrollerini, silme işlemlerini ve sipariş tamamlama akışını hazırlamak.
 - **Ön Koşullar:** Aşama 9 onayı.
 - **Yapılacak İşler:**

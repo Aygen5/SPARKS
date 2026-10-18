@@ -109,182 +109,255 @@ void main() {
     setUp(() {
       fakeRepo = FakeFavoritesProductRepository([testProduct1, testProduct2]);
       fakeLocalDataSource = InMemoryFavoritesLocalDataSource();
-      fakeFavRepo = FavoritesRepositoryImpl(localDataSource: fakeLocalDataSource);
+      fakeFavRepo = FavoritesRepositoryImpl(
+        localDataSource: fakeLocalDataSource,
+      );
       favoritesManager = FavoritesManager(repository: fakeFavRepo);
     });
 
-    testWidgets('1. Favori listesi boşken editoryal boş durum ve KATALOĞA DÖN butonu gösterilir', (tester) async {
-      bool catalogNavigated = false;
+    testWidgets(
+      '1. Favori listesi boşken editoryal boş durum ve KATALOĞA DÖN butonu gösterilir',
+      (tester) async {
+        bool catalogNavigated = false;
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-          onCatalogNavigate: () => catalogNavigated = true,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+            onCatalogNavigate: () => catalogNavigated = true,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
-      expect(
-        find.textContaining('Henüz favorilerinize bir ürün eklemediniz'),
-        findsOneWidget,
-      );
-      expect(find.byKey(const ValueKey('favorites_empty_catalog_button')), findsOneWidget);
+        expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
+        expect(
+          find.textContaining('Henüz favorilerinize bir ürün eklemediniz'),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('favorites_empty_catalog_button')),
+          findsOneWidget,
+        );
 
-      await tester.tap(find.byKey(const ValueKey('favorites_empty_catalog_button')));
-      await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const ValueKey('favorites_empty_catalog_button')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(catalogNavigated, isTrue);
-    });
+        expect(catalogNavigated, isTrue);
+      },
+    );
 
-    testWidgets('2. Kayıtlı favoriler doğru başlık, fiyat, renk kodu ve kalp ikonu ile listelenir', (tester) async {
-      await favoritesManager.addFavorite(testProduct1.id);
-      await favoritesManager.addFavorite(testProduct2.id);
+    testWidgets(
+      '2. Kayıtlı favoriler doğru başlık, fiyat, renk kodu ve kalp ikonu ile listelenir',
+      (tester) async {
+        await favoritesManager.addFavorite(testProduct1.id);
+        await favoritesManager.addFavorite(testProduct2.id);
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('favorites_grid')), findsOneWidget);
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsOneWidget);
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')), findsOneWidget);
+        expect(find.byKey(const ValueKey('favorites_grid')), findsOneWidget);
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')),
+          findsOneWidget,
+        );
 
-      expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
-      expect(find.text('ANTRASİT | 4021/801'), findsOneWidget);
-      expect(find.text(CurrencyFormatter.format(8490.0)), findsOneWidget);
-      expect(find.text('-%15'), findsOneWidget);
+        expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
+        expect(find.text('ANTRASİT | 4021/801'), findsOneWidget);
+        expect(find.text(CurrencyFormatter.format(8490.0)), findsOneWidget);
+        expect(find.text('-%15'), findsOneWidget);
 
-      expect(find.text('BÜZGÜLÜ DETAYLI TRİKO'), findsOneWidget);
-      expect(find.text('SİYAH | 3412/104'), findsOneWidget);
-      expect(find.text(CurrencyFormatter.format(3290.0)), findsOneWidget);
+        expect(find.text('BÜZGÜLÜ DETAYLI TRİKO'), findsOneWidget);
+        expect(find.text('SİYAH | 3412/104'), findsOneWidget);
+        expect(find.text(CurrencyFormatter.format(3290.0)), findsOneWidget);
 
-      // Üst bar sayaç rozeti
-      expect(find.text('2 ÜRÜN'), findsOneWidget);
+        // Üst bar sayaç rozeti
+        expect(find.text('2 ÜRÜN'), findsOneWidget);
 
-      // Kalp ikonları mevcuttur
-      expect(find.byKey(ValueKey('favorites_remove_${testProduct1.id}')), findsOneWidget);
-      expect(find.byKey(ValueKey('favorites_remove_${testProduct2.id}')), findsOneWidget);
-    });
+        // Kalp ikonları mevcuttur
+        expect(
+          find.byKey(ValueKey('favorites_remove_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(ValueKey('favorites_remove_${testProduct2.id}')),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('3. Kalp ikonuna dokunulduğunda ürün listeden anında çıkarılır ve sayaç güncellenir', (tester) async {
-      await favoritesManager.addFavorite(testProduct1.id);
-      await favoritesManager.addFavorite(testProduct2.id);
+    testWidgets(
+      '3. Kalp ikonuna dokunulduğunda ürün listeden anında çıkarılır ve sayaç güncellenir',
+      (tester) async {
+        await favoritesManager.addFavorite(testProduct1.id);
+        await favoritesManager.addFavorite(testProduct2.id);
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsOneWidget);
-      expect(find.text('2 ÜRÜN'), findsOneWidget);
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(find.text('2 ÜRÜN'), findsOneWidget);
 
-      // testProduct1 in kalp ikonuna dokun
-      await tester.tap(find.byKey(ValueKey('favorites_remove_${testProduct1.id}')));
-      await tester.pumpAndSettle();
+        // testProduct1 in kalp ikonuna dokun
+        await tester.tap(
+          find.byKey(ValueKey('favorites_remove_${testProduct1.id}')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(favoritesManager.isFavorite(testProduct1.id), isFalse);
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsNothing);
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')), findsOneWidget);
-      expect(find.text('1 ÜRÜN'), findsOneWidget);
+        expect(favoritesManager.isFavorite(testProduct1.id), isFalse);
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')),
+          findsOneWidget,
+        );
+        expect(find.text('1 ÜRÜN'), findsOneWidget);
 
-      // Son ürünü de çıkar
-      await tester.tap(find.byKey(ValueKey('favorites_remove_${testProduct2.id}')));
-      await tester.pumpAndSettle();
+        // Son ürünü de çıkar
+        await tester.tap(
+          find.byKey(ValueKey('favorites_remove_${testProduct2.id}')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
-    });
+        expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
+      },
+    );
 
-    testWidgets('4. Harici bir ekrandan veya yöneticiden favori eklendiğinde ekrana anında yansır', (tester) async {
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      '4. Harici bir ekrandan veya yöneticiden favori eklendiğinde ekrana anında yansır',
+      (tester) async {
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
+        expect(find.text('FAVORİ LİSTENİZ BOŞ'), findsOneWidget);
 
-      // Dışarıdan favoriye ekle
-      await favoritesManager.addFavorite(testProduct1.id);
-      await tester.pumpAndSettle();
+        // Dışarıdan favoriye ekle
+        await favoritesManager.addFavorite(testProduct1.id);
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsOneWidget);
-      expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
-      expect(find.text('1 ÜRÜN'), findsOneWidget);
-    });
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
+        expect(find.text('1 ÜRÜN'), findsOneWidget);
+      },
+    );
 
-    testWidgets('5. Favori ürün kartına dokunulduğunda onProductTap tetiklenir', (tester) async {
-      Product? tappedProduct;
-      await favoritesManager.addFavorite(testProduct1.id);
+    testWidgets(
+      '5. Favori ürün kartına dokunulduğunda onProductTap tetiklenir',
+      (tester) async {
+        Product? tappedProduct;
+        await favoritesManager.addFavorite(testProduct1.id);
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-          onProductTap: (product) => tappedProduct = product,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+            onProductTap: (product) => tappedProduct = product,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')));
-      await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(tappedProduct, isNotNull);
-      expect(tappedProduct!.id, testProduct1.id);
-    });
+        expect(tappedProduct, isNotNull);
+        expect(tappedProduct!.id, testProduct1.id);
+      },
+    );
 
-    testWidgets('6. Hata durumunda kontrollü mesaj ve TEKRAR DENE butonu çalışır', (tester) async {
-      fakeRepo.shouldThrow = true;
-      await favoritesManager.addFavorite(testProduct1.id);
+    testWidgets(
+      '6. Hata durumunda kontrollü mesaj ve TEKRAR DENE butonu çalışır',
+      (tester) async {
+        fakeRepo.shouldThrow = true;
+        await favoritesManager.addFavorite(testProduct1.id);
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.textContaining('Favoriler yüklenirken bir sorun oluştu'), findsOneWidget);
-      expect(find.byKey(const ValueKey('favorites_retry_button')), findsOneWidget);
+        expect(
+          find.textContaining('Favoriler yüklenirken bir sorun oluştu'),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('favorites_retry_button')),
+          findsOneWidget,
+        );
 
-      // Hatayı düzelt ve tekrar dene
-      fakeRepo.shouldThrow = false;
-      await tester.tap(find.byKey(const ValueKey('favorites_retry_button')));
-      await tester.pumpAndSettle();
+        // Hatayı düzelt ve tekrar dene
+        fakeRepo.shouldThrow = false;
+        await tester.tap(find.byKey(const ValueKey('favorites_retry_button')));
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsOneWidget);
-      expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
-    });
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(find.text('OVERSIZE YÜN KABAN'), findsOneWidget);
+      },
+    );
 
-    testWidgets('7. Dar ekran boyutlarında (360x640) FavoritesScreen taşma olmadan render edilir', (tester) async {
-      tester.view.physicalSize = const Size(360, 640);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(() => tester.view.resetPhysicalSize());
+    testWidgets(
+      '7. Dar ekran boyutlarında (360x640) FavoritesScreen taşma olmadan render edilir',
+      (tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
 
-      await favoritesManager.addFavorite(testProduct1.id);
-      await favoritesManager.addFavorite(testProduct2.id);
+        await favoritesManager.addFavorite(testProduct1.id);
+        await favoritesManager.addFavorite(testProduct2.id);
 
-      await tester.pumpWidget(
-        createFavoritesWidget(
-          favoritesManager: favoritesManager,
-          repository: fakeRepo,
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createFavoritesWidget(
+            favoritesManager: favoritesManager,
+            repository: fakeRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')), findsOneWidget);
-      expect(find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(ValueKey('favorite_product_card_${testProduct2.id}')),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

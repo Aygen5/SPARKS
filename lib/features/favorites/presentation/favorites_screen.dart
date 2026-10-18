@@ -78,8 +78,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final currentIds = _favoritesManager.favoriteIds;
 
     // Listeden çıkarılan ürünleri anında UI'dan filtrele
-    final filtered =
-        _favoriteProducts.where((p) => currentIds.contains(p.id)).toList();
+    final filtered = _favoriteProducts
+        .where((p) => currentIds.contains(p.id))
+        .toList();
 
     // Yeni eklenen kimlikler varsa onları da yükle
     final existingIds = filtered.map((p) => p.id).toSet();
@@ -181,9 +182,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return Scaffold(
       backgroundColor: AppColors.shoppingBackground,
       appBar: _buildAppBar(),
-      body: SafeArea(
-        child: _buildBody(),
-      ),
+      body: SafeArea(child: _buildBody()),
     );
   }
 
@@ -361,10 +360,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         minHeight: 32,
                       ),
                       iconSize: 20,
-                      icon: const Icon(
-                        Icons.favorite,
-                        color: AppColors.error,
-                      ),
+                      icon: const Icon(Icons.favorite, color: AppColors.error),
                       tooltip: 'Favorilerden Çıkar',
                       onPressed: () =>
                           _favoritesManager.removeFavorite(product.id),

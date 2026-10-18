@@ -10,6 +10,7 @@ import 'package:sparks/features/favorites/presentation/favorites_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
+import 'package:sparks/features/orders/presentation/orders_screen.dart';
 import 'package:sparks/features/product_detail/presentation/product_detail_screen.dart';
 import 'package:sparks/features/search/presentation/search_screen.dart';
 import 'package:sparks/features/splash/presentation/splash_screen.dart';
@@ -151,6 +152,13 @@ class AppRouter {
           path: AppRoutes.favorites,
           name: 'favorites',
           builder: (context, state) => const FavoritesScreen(),
+        ),
+
+        // 6. Alışverişlerim Rotası (Aşama 9 Gerçek Alışverişlerim Ekranı)
+        GoRoute(
+          path: AppRoutes.orders,
+          name: 'orders',
+          builder: (context, state) => const OrdersScreen(),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

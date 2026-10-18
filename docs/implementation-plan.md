@@ -184,21 +184,32 @@
 
 ---
 
-## Aşama 10 — Sepet Ekranı ve Tamamlayıcı Etkileşimler (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Dinamik sepet ekranını, miktar kontrollerini, silme işlemlerini ve sipariş tamamlama akışını hazırlamak.
-- **Ön Koşullar:** Aşama 9 onayı.
-- **Yapılacak İşler:**
-  - Beyaz zeminli ürün fotoğrafları, ürün adı, beden, fiyat ve `- 1 +` miktar butonları.
-  - `SİL` ve `Favorilere Ekle` aksiyonları.
-  - Altta sabit ödeme çubuğu: Dinamik toplam tutar (TL) ve keskin beyaz `DEVAM ET ({adet})` butonu.
-  - Kullanıcı bilgilendirme dialog ve SnackBar geri bildirimleri.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/cart/presentation/cart_screen.dart`.
-- **Test Yöntemi:** Sepet etkileşimleri ve toplam tutar hesaplama testleri.
-- **Tamamlanma Ölçütü:** Ürün miktarları değiştikçe toplam tutar anında güncellenir; boş sepet durumu düzgün gösterilir.
+## Aşama 10 — Sepet İyileştirmeleri, Alışveriş Öncesi Kontroller ve Checkout (TAMAMLANDI)
+- **Amaç:** Dinamik sepet etkileşimlerini güçlendirmek, onay ve stok kontrollerini sağlamak ve dürüst bir checkout inceleme akışı oluşturmak.
+- **Gerçekleştirilen İşler:**
+  - `CartScreen` İyileştirmeleri:
+    - "SEPETİ TEMİZLE" eylemine editoryal onay dialogu (`cart_clear_confirm_dialog`, `cart_clear_cancel_button`, `cart_clear_confirm_button`) eklendi; kazara sepet boşaltmalarının önüne geçildi.
+    - Sepetteki tükenmiş ürünler için editoryal `STOKTA YOK` rozeti eklendi; miktar artırma butonu (+) devre dışı bırakıldı. `CartCubit.incrementQuantity` ile cubit düzeyinde stok denetimi güçlendirildi.
+    - Sepet ürün görselleri ve başlıkları tıklanabilir hâle getirilerek `/product/:id` detay sayfasına geçiş sağlandı.
+    - Boş sepet durumu (`KATALOĞA DÖN`) ve editoryal yönlendirmeler korundu.
+    - "DEVAM ET" butonu `/checkout` ekranına yönlendirilecek şekilde bağlandı.
+  - `CheckoutScreen` (Sipariş Özeti İnceleme Ekranı):
+    - `lib/features/checkout/presentation/checkout_screen.dart` ve `/checkout` rotası GoRouter'a entegre edildi (`lib/app/router/app_router.dart`).
+    - `CartCubit` ile tek merkezli entegre çalışır; ara toplam, standart teslimat (`ÜCRETSİZ`) ve genel toplamı dürüst ve hatasız hesaplar.
+    - Reaktif boş durum: Sepet boşaldığında veya boş açıldığında `SEPETİNİZDE ÜRÜN BULUNMUYOR` mesajı ve `SEPETE DÖN` butonu gösterilir.
+    - Dürüstlük İlkesi: Sahte ödeme formu, sahte kart/kupon veya uydurma sipariş numarası üretilmez; `ÖNEMLİ BİLGİLENDİRME` kutusu ve buton uyarısıyla canlı ödeme servisinin henüz aktif olmadığı şeffafça açıklanır.
+  - Testler:
+    - `test/features/cart/cart_screen_test.dart` (14 widget testi)
+    - `test/features/cart/cart_cubit_test.dart` (13 birim testi)
+    - `test/features/checkout/checkout_screen_test.dart` (8 widget testi)
+    - Toplam test sayısı 135'e yükseltildi ve tümü başarıyla tamamlandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/cart/presentation/cart_screen.dart`, `lib/features/cart/presentation/cubit/cart_cubit.dart`, `lib/features/checkout/presentation/checkout_screen.dart`, `lib/app/router/app_router.dart`, `test/features/cart/*`, `test/features/checkout/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (135 testin 135'i başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Sepet onayları ve kontrolleri eksiksiz çalışır; `/checkout` ekranı gerçek sepet verisiyle dürüst bir özet sunar; sıfır analiz uyarısı ve %100 geçen testler.
 
 ---
 
-## Aşama 11 — Test, Küçük Ekran Uyumu, Erişilebilirlik ve Son Kontrol
+## Aşama 11 — Test, Küçük Ekran Uyumu, Erişilebilirlik ve Son Kontrol (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Tüm uygulamanın analizini, farklı ekran boyutlarında taşma (overflow) kontrollerini ve son kalite testlerini tamamlamak.
 - **Ön Koşullar:** Aşama 10 onayı.
 - **Yapılacak İşler:**

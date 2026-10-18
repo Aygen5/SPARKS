@@ -6,6 +6,7 @@ import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/account/presentation/account_screen.dart';
 import 'package:sparks/features/cart/presentation/cart_screen.dart';
 import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.dart';
+import 'package:sparks/features/checkout/presentation/checkout_screen.dart';
 import 'package:sparks/features/favorites/presentation/favorites_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String search = '/search';
   static const String account = '/account';
   static const String cart = '/cart';
+  static const String checkout = '/checkout';
   static const String catalog = '/catalog';
   static const String productDetail = '/product/:id';
   static const String favorites = '/favorites';
@@ -159,6 +161,13 @@ class AppRouter {
           path: AppRoutes.orders,
           name: 'orders',
           builder: (context, state) => const OrdersScreen(),
+        ),
+
+        // 7. Sipariş Özeti / Checkout Rotası (Aşama 10 Gerçek İnceleme Ekranı)
+        GoRoute(
+          path: AppRoutes.checkout,
+          name: 'checkout',
+          builder: (context, state) => const CheckoutScreen(),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

@@ -21,13 +21,25 @@ import 'package:sparks/features/cart/presentation/cubit/cart_state.dart';
 /// - Dinamik genel toplam ve toplam adet göstergesi.
 /// - Monokrom ve keskin köşeli editoryal tasarım.
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key, this.cartCubit, this.onCatalogNavigate});
+  const CartScreen({
+    super.key,
+    this.cartCubit,
+    this.onCatalogNavigate,
+    this.onProductTap,
+    this.onCheckoutNavigate,
+  });
 
   /// Test edilebilirlik için dışarıdan enjekte edilebilen CartCubit örneği
   final CartCubit? cartCubit;
 
   /// Boş sepet durumunda kataloğa gitme eylemi için özel geri çağrım
   final VoidCallback? onCatalogNavigate;
+
+  /// Ürün detayına gitme eylemi için geri çağrım
+  final void Function(String productId)? onProductTap;
+
+  /// Sipariş özeti (checkout) ekranına gitme eylemi için geri çağrım
+  final VoidCallback? onCheckoutNavigate;
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -49,6 +61,81 @@ class _CartScreenState extends State<CartScreen> {
     } else {
       context.go('/catalog');
     }
+  }
+
+  void _navigateToProduct(String productId) {
+    if (widget.onProductTap != null) {
+      widget.onProductTap!(productId);
+    } else {
+      context.push('/product/$productId');
+    }
+  }
+
+  void _navigateToCheckout() {
+    if (widget.onCheckoutNavigate != null) {
+      widget.onCheckoutNavigate!();
+    } else {
+      context.push('/checkout');
+    }
+  }
+
+  void _showClearCartConfirmationDialog(BuildContext context, CartCubit cubit) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          key: const ValueKey('cart_clear_confirm_dialog'),
+          backgroundColor: AppColors.shoppingBackground,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+            side: BorderSide(color: AppColors.dividerLight),
+          ),
+          title: Text(
+            'SEPETİ TEMİZLE',
+            style: AppTextStyles.sectionHeading.copyWith(
+              fontSize: 16,
+              letterSpacing: 2.0,
+            ),
+          ),
+          content: Text(
+            'Sepetinizdeki tüm ürünler silinecektir. Devam etmek istiyor musunuz?',
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.secondaryText,
+              height: 1.5,
+            ),
+          ),
+          actions: [
+            TextButton(
+              key: const ValueKey('cart_clear_cancel_button'),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'VAZGEÇ',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.secondaryText,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            TextButton(
+              key: const ValueKey('cart_clear_confirm_button'),
+              onPressed: () {
+                cubit.clearCart();
+                Navigator.of(dialogContext).pop();
+              },
+              child: Text(
+                'TEMİZLE',
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.primaryText,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -154,7 +241,7 @@ class _CartScreenState extends State<CartScreen> {
             if (state.isEmpty) return const SizedBox.shrink();
             return TextButton(
               key: const ValueKey('cart_clear_button'),
-              onPressed: () => cubit.clearCart(),
+              onPressed: () => _showClearCartConfirmationDialog(context, cubit),
               child: Text(
                 'SEPETİ TEMİZLE',
                 style: AppTextStyles.caption.copyWith(
@@ -235,21 +322,25 @@ class _CartScreenState extends State<CartScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Ürün Görseli (3:4 Editoryal Oran)
-          SizedBox(
-            width: 80,
-            child: AspectRatio(
-              aspectRatio: 3 / 4,
-              child: Container(
-                color: AppColors.editorialAnthracite,
-                child: Image.network(
-                  product.images.first,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      color: AppColors.secondaryText,
-                      size: 24,
+          // 1. Ürün Görseli (3:4 Editoryal Oran) - Tıklanabilir
+          GestureDetector(
+            key: ValueKey('cart_item_image_${product.id}'),
+            onTap: () => _navigateToProduct(product.id),
+            child: SizedBox(
+              width: 80,
+              child: AspectRatio(
+                aspectRatio: 3 / 4,
+                child: Container(
+                  color: AppColors.editorialAnthracite,
+                  child: Image.network(
+                    product.images.first,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Center(
+                      child: Icon(
+                        Icons.broken_image_outlined,
+                        color: AppColors.secondaryText,
+                        size: 24,
+                      ),
                     ),
                   ),
                 ),
@@ -263,12 +354,16 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Başlık
-                Text(
-                  product.title,
-                  style: AppTextStyles.productTitle.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                // Başlık - Tıklanabilir
+                GestureDetector(
+                  key: ValueKey('cart_item_title_${product.id}'),
+                  onTap: () => _navigateToProduct(product.id),
+                  child: Text(
+                    product.title,
+                    style: AppTextStyles.productTitle.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -283,10 +378,27 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xs),
 
-                // Birim Fiyat
-                Text(
-                  CurrencyFormatter.format(product.price),
-                  style: AppTextStyles.productPrice.copyWith(fontSize: 13),
+                // Birim Fiyat ve Stok Durumu
+                Row(
+                  children: [
+                    Text(
+                      CurrencyFormatter.format(product.price),
+                      style: AppTextStyles.productPrice.copyWith(fontSize: 13),
+                    ),
+                    if (product.isOutOfStock) ...[
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        'STOKTA YOK',
+                        key: ValueKey('cart_item_out_of_stock_${product.id}'),
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.error,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.sm),
 
@@ -333,22 +445,30 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
 
-                    // Adet Artır (+)
+                    // Adet Artır (+) - Stokta yoksa devre dışı
                     Container(
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.dividerLight),
+                        border: Border.all(
+                          color: product.isOutOfStock
+                              ? AppColors.divider
+                              : AppColors.dividerLight,
+                        ),
                       ),
                       child: IconButton(
                         key: ValueKey('cart_qty_increase_${product.id}'),
                         padding: EdgeInsets.zero,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.add,
                           size: 14,
-                          color: AppColors.primaryText,
+                          color: product.isOutOfStock
+                              ? AppColors.secondaryText.withAlpha(100)
+                              : AppColors.primaryText,
                         ),
-                        onPressed: () => cubit.incrementQuantity(product.id),
+                        onPressed: product.isOutOfStock
+                            ? null
+                            : () => cubit.incrementQuantity(product.id),
                       ),
                     ),
 
@@ -446,7 +566,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
 
-          // Satın Alma Aksiyon Butonu (Aşama 10 için editoryal bilgilendirme)
+          // Satın Alma Aksiyon Butonu (Aşama 10: Checkout inceleme ekranına yönlendirme)
           ElevatedButton(
             key: const ValueKey('cart_checkout_button'),
             style: ElevatedButton.styleFrom(
@@ -458,17 +578,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Sipariş tamamlama akışı Aşama 10\'da eklenecektir.',
-                  ),
-                  duration: Duration(seconds: 2),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
+            onPressed: _navigateToCheckout,
             child: Text(
               'DEVAM ET (${state.totalItemCount})',
               style: AppTextStyles.buttonText,

@@ -288,5 +288,20 @@ void main() {
         expect(fail, isFalse);
       },
     );
+
+    test(
+      '13. incrementQuantity tükenen ürünün adedini artırmaz ve hata bildirir',
+      () async {
+        cartCubit.setInitialCartForTesting({'sparks-w-003': 1});
+
+        await cartCubit.incrementQuantity('sparks-w-003');
+
+        expect(cartCubit.state.getQuantity('sparks-w-003'), 1);
+        expect(
+          cartCubit.state.errorMessage,
+          'Tükenen ürünün adedi artırılamaz.',
+        );
+      },
+    );
   });
 }

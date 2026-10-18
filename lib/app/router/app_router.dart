@@ -4,6 +4,7 @@ import 'package:sparks/app/theme/app_colors.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/account/presentation/account_screen.dart';
+import 'package:sparks/features/auth/presentation/login_screen.dart';
 import 'package:sparks/features/cart/presentation/cart_screen.dart';
 import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.dart';
 import 'package:sparks/features/checkout/presentation/checkout_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const String productDetail = '/product/:id';
   static const String favorites = '/favorites';
   static const String orders = '/account/orders';
+  static const String login = '/login';
 }
 
 class AppRouter {
@@ -168,6 +170,32 @@ class AppRouter {
           path: AppRoutes.checkout,
           name: 'checkout',
           builder: (context, state) => const CheckoutScreen(),
+        ),
+
+        // 8. Kullanıcı Giriş Ekranı (Aşama 12 Aşağıdan Yukarı Animasyonlu Rota)
+        GoRoute(
+          path: AppRoutes.login,
+          name: 'login',
+          pageBuilder: (context, state) {
+            return CustomTransitionPage<void>(
+              key: state.pageKey,
+              child: const LoginScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(0.0, 1.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeOutCubic;
+                    final tween = Tween(
+                      begin: begin,
+                      end: end,
+                    ).chain(CurveTween(curve: curve));
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+            );
+          },
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

@@ -6,6 +6,7 @@ import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/features/account/presentation/account_screen.dart';
 import 'package:sparks/features/cart/presentation/cart_screen.dart';
 import 'package:sparks/features/catalog/presentation/catalog_placeholder_screen.dart';
+import 'package:sparks/features/favorites/presentation/favorites_screen.dart';
 import 'package:sparks/features/home/presentation/home_screen.dart';
 import 'package:sparks/features/menu/presentation/menu_screen.dart';
 import 'package:sparks/features/navigation/presentation/main_scaffold.dart';
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String cart = '/cart';
   static const String catalog = '/catalog';
   static const String productDetail = '/product/:id';
+  static const String favorites = '/favorites';
   static const String orders = '/account/orders';
 }
 
@@ -142,6 +144,13 @@ class AppRouter {
             final productId = state.pathParameters['id'] ?? '';
             return ProductDetailScreen(productId: productId);
           },
+        ),
+
+        // 5. Favoriler Rotası (Aşama 9 Gerçek Favoriler Ekranı)
+        GoRoute(
+          path: AppRoutes.favorites,
+          name: 'favorites',
+          builder: (context, state) => const FavoritesScreen(),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

@@ -372,6 +372,31 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   - Kullanım Koşulları ve Gizlilik Politikası onay kutusu (`register_terms_checkbox`).
   - Başarılı kayıtta `AuthCubit.signUp` tetiklenir ve kullanıcı otomatik olarak oturum açmış duruma geçer.
 
+---
+
+## 13. Oturum Yönetimi, Navigasyon ve Hesabım Entegrasyonu (Aşama 13)
+
+### 13.1. Uygulama Geneli Oturum Yönetimi ve Kök Sağlayıcı (`SparksApp`)
+- `SparksApp` kökünde `MultiBlocProvider` kullanılarak hem `CartCubit` hem de `AuthCubit` tüm widget ağacına enjekte edilmiştir.
+- `main.dart` başlangıcında `AuthCubit.instance.checkAuthStatus()` tetiklenerek yerel/Firebase oturumu kontrol edilir.
+- Kontrol esnasında kullanıcı asla zorunlu bir Login ekranına yönlendirilmez; misafir alışveriş ve editoryal gezinme deneyimi tamamen korunur.
+
+### 13.2. Dinamik Hesabım Ekranı (`AccountScreen`)
+- **Misafir Kullanıcı Deneyimi:**
+  - `MİSAFİR KULLANICI` kartı (`account_guest_card`) gösterilir.
+  - `GİRİŞ YAP` (`account_login_button`) ve `KAYIT OL` (`account_register_button`) aksiyonları ile auth akışına erişim sunulur.
+  - Favorilerim, Alışverişlerim ve Sepetim kısayolları misafir modunda da eksiksiz çalışır.
+- **Oturum Açmış Kullanıcı Deneyimi:**
+  - `HESABIM` kullanıcı kartı (`account_user_card`) gösterilir.
+  - Firebase'den sağlanan gerçek e-posta adresi (`account_user_email`) ve ad soyad görüntülenir; sahte profil verisi uydurulmaz.
+  - `ÇIKIŞ YAP` butonu (`account_logout_button`) editoryal onay dialogu (`account_logout_confirm_dialog`) ile korunur.
+  - Onaylandığında `cubit.signOut()` çalışır ve anında misafir kartına dönülür.
+
+### 13.3. Navigasyon Akışları ve Yerel Veri Bağımsızlığı
+- Başarılı giriş ve kayıt sonrası kullanıcı doğrudan ana alışveriş ekranına yönlendirilir; kayıt sonrasında kullanıcı tekrar Login ekranına düşürülmez.
+- `isLoading` denetimleri ile formlarda mükerrer istekler ve çift tıklamalar engellenmiştir.
+- Kullanıcı giriş yaptığında veya çıkış yaptığında cihazdaki yerel sepet (`CartCubit`) ve favori (`FavoritesManager`) verileri sıfırlanmaz veya bozulmaz; yerel kalıcılık bağımsız olarak çalışır.
+
 
 
 

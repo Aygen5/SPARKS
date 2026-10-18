@@ -123,6 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submit(AuthCubit cubit) async {
+    if (cubit.state.isLoading) return;
     if (!_formKey.currentState!.validate()) return;
 
     cubit.clearError();
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (context.canPop()) {
         context.pop();
       } else {
-        context.go('/home');
+        context.go(AppRoutes.home);
       }
     }
   }

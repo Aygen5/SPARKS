@@ -109,6 +109,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _submitRegister(AuthCubit cubit) async {
+    if (cubit.state.isLoading) return;
+
     setState(() {
       _termsError = !_termsAccepted;
     });

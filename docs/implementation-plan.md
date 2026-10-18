@@ -209,14 +209,56 @@
 
 ---
 
-## Aşama 11 — Test, Küçük Ekran Uyumu, Erişilebilirlik ve Son Kontrol (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Tüm uygulamanın analizini, farklı ekran boyutlarında taşma (overflow) kontrollerini ve son kalite testlerini tamamlamak.
-- **Ön Koşullar:** Aşama 10 onayı.
+## Aşama 11 — Kimlik Doğrulama Altyapısı (Firebase Auth + Cubit) (TAMAMLANDI)
+- **Amaç:** Gerçek e-posta/şifre kimlik doğrulaması için Firebase Authentication ve Cubit altyapısını kurmak; sahte oturum üretmeden test edilebilir ve güvenli bir mimari oluşturmak.
+- **Gerçekleştirilen İşler:**
+  - `firebase_core` ve `firebase_auth` paketleri `pubspec.yaml` dosyasına eklendi.
+  - Domain Varlığı: `AppUser` (`id`, `email`, `displayName`, `isEmailVerified`, `formattedName`, `copyWith`) oluşturuldu (`lib/features/auth/domain/entities/app_user.dart`).
+  - Repository Sözleşmesi & Hata Modeli: `AuthRepository` ve `AuthException` oluşturuldu (`lib/features/auth/domain/repositories/auth_repository.dart`).
+  - Hata Çevirici: `AuthErrorMapper` ile Firebase hata kodları (`user-not-found`, `wrong-password`, `invalid-credential`, `email-already-in-use`, `weak-password`, `user-disabled`, `too-many-requests` vb.) kullanıcı dostu Türkçe mesajlara dönüştürüldü (`lib/features/auth/data/mappers/auth_error_mapper.dart`).
+  - Güvenli Repository Uygulaması: `AuthRepositoryImpl` oluşturuldu; Firebase henüz initialize edilmediğinde çökmeyi önleyen ve açık hata bildiren savunmacı yapı kuruldu (`lib/features/auth/data/repositories/auth_repository_impl.dart`).
+  - State Yönetimi: `AuthState` (`AuthStatus.initial`, `unauthenticated`, `loading`, `authenticated`, `error`) ve `AuthCubit` (`signIn`, `signUp`, `signOut`, `checkAuthStatus`, `authStateChanges` reaktif dinleyicisi) yazıldı (`lib/features/auth/presentation/cubit/*`).
+  - Testler:
+    - `test/features/auth/auth_repository_test.dart` (5 birim testi)
+    - `test/features/auth/auth_cubit_test.dart` (9 birim testi)
+    - Toplam test sayısı 152'ye yükseltildi ve tümü başarıyla tamamlandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `pubspec.yaml`, `pubspec.lock`, `lib/features/auth/*`, `test/features/auth/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (152 testin 152'si başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Kimlik doğrulama altyapısı eksiksiz çalışır; Firebase yapılandırma gereksinimleri belgelenmiştir; tüm testler yeşildir.
+
+---
+
+## Aşama 12 — Login ve Register Tasarımı (KULLANICI ONAYI BEKLENİYOR)
+- **Amaç:** Kullanıcı referans ekran görüntülerini SPARKS editoryal ve monokrom tasarım diline uyarlayarak aşağıdan yukarıya açılan (bottom-sheet / modal animasyonlu) giriş ve kayıt ekranlarını oluşturmak; ana sayfa sağ üstüne giriş bağlantısı eklemek.
+- **Ön Koşullar:** Aşama 11 onayı ve kullanıcının referans ekran görüntülerini iletmesi.
 - **Yapılacak İşler:**
-  - `dart analyze` ile sıfır uyarı denetimi.
-  - Dar ekran (360x640), standart (390x844) ve geniş ekranlarda taşma testleri.
+  - Login ekranı tasarımı (e-posta, şifre, şifremi unuttum, giriş yap butonu, kayıt ol geçişi).
+  - Register ekranı tasarımı (ad soyad, e-posta, şifre, sözleşme onayı, kayıt ol butonu).
+  - Ana sayfanın (Lookbook) sağ üst köşesine editoryal giriş butonu/ikonu.
+  - Ekranların aşağıdan yukarıya yumuşak animasyonla açılması (GoRouter / Page transition).
+- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/auth/presentation/login_screen.dart`, `lib/features/auth/presentation/register_screen.dart`, `lib/features/home/presentation/home_screen.dart`, `lib/app/router/app_router.dart`.
+- **Test Yöntemi:** Widget testleri, form doğrulama testleri.
+- **Tamamlanma Ölçütü:** Giriş ve kayıt ekranları editoryal estetikle açılır ve `AuthCubit` ile tam uyumlu çalışır.
+
+---
+
+## Aşama 13 — Oturum ve Uygulama Entegrasyonu (BEKLEMEDE)
+- **Amaç:** Kayıt sonrası otomatik giriş, uygulama yeniden açıldığında oturumun korunması, çıkış yapma ve Hesabım ekranının gerçek kullanıcı durumuna uyarlanması. Mevcut favori ve sepet işleyişini bozmadan entegre etmek.
+- **Ön Koşullar:** Aşama 12 onayı.
+- **Yapılacak İşler:**
+  - Hesabım (`AccountScreen`) ekranının dinamik kullanıcı adına ve e-postasına göre güncellenmesi; oturum kapatma (`ÇIKIŞ YAP`) aksiyonu.
+  - Uygulama başlangıcında oturum kontrolü.
+  - Favori ve sepet verilerinin kullanıcı oturumuyla uyumlu çalışması.
+- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/account/presentation/account_screen.dart`, `lib/main.dart`.
+- **Test Yöntemi:** Entegrasyon ve widget testleri.
+
+---
+
+## Aşama 14 — Testler, Erişilebilirlik ve Son Kontroller (BEKLEMEDE)
+- **Amaç:** Giriş/kayıt hataları, doğrulama, oturum yönetimi, ekran animasyonları, küçük ekranlar, önceki testler ve web derlemesini doğrulayıp nihai teslimi gerçekleştirmek.
+- **Ön Koşullar:** Aşama 13 onayı.
+- **Yapılacak İşler:**
+  - `dart analyze` sıfır sorun denetimi.
+  - Dar ekran (360x640) taşma denetimleri.
   - `flutter build web` derleme doğrulaması.
-  - Dokümantasyon ve README güncellemeleri.
-- **Oluşturulacak / Değiştirilecek Dosyalar:** Proje genelindeki test ve doküman dosyaları.
-- **Test Yöntemi:** `flutter test`, `dart analyze`, `flutter build web`.
-- **Tamamlanma Ölçütü:** Tüm testler geçer, hiçbir taşma veya derleme hatası kalmaz.
+  - Kapsamlı teslim raporu.

@@ -109,6 +109,8 @@ void main() {
   Widget createCartWidget({
     required CartCubit cubit,
     VoidCallback? onNavigateToCatalog,
+    void Function(String)? onProductTap,
+    VoidCallback? onCheckoutNavigate,
   }) {
     return MaterialApp(
       theme: AppTheme.darkTheme,
@@ -117,6 +119,8 @@ void main() {
         child: CartScreen(
           cartCubit: cubit,
           onCatalogNavigate: onNavigateToCatalog,
+          onProductTap: onProductTap,
+          onCheckoutNavigate: onCheckoutNavigate,
         ),
       ),
     );
@@ -306,7 +310,7 @@ void main() {
     );
 
     testWidgets(
-      '6. SEPETİ TEMİZLE butonu tüm sepeti boşaltır ve boş duruma geçirir',
+      '6. SEPETİ TEMİZLE butonu onay dialogunu açar ve onaylanınca tüm sepeti boşaltır',
       (tester) async {
         await cartCubit.addProduct(testProduct1);
         await cartCubit.addProduct(testProduct2);
@@ -319,9 +323,63 @@ void main() {
         await tester.tap(find.byKey(const ValueKey('cart_clear_button')));
         await tester.pumpAndSettle();
 
+        // Onay dialogu açıldı
+        expect(
+          find.byKey(const ValueKey('cart_clear_confirm_dialog')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('cart_clear_confirm_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('cart_clear_cancel_button')),
+          findsOneWidget,
+        );
+
+        // Onayla
+        await tester.tap(
+          find.byKey(const ValueKey('cart_clear_confirm_button')),
+        );
+        await tester.pumpAndSettle();
+
         expect(cartCubit.state.isEmpty, isTrue);
         expect(find.text('SEPETİNİZ BOŞ'), findsOneWidget);
         expect(find.byKey(const ValueKey('cart_clear_button')), findsNothing);
+      },
+    );
+
+    testWidgets(
+      '6b. SEPETİ TEMİZLE onay dialogunda VAZGEÇ tıklandığında sepet boşaltılmaz',
+      (tester) async {
+        await cartCubit.addProduct(testProduct1);
+
+        await tester.pumpWidget(createCartWidget(cubit: cartCubit));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const ValueKey('cart_clear_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const ValueKey('cart_clear_confirm_dialog')),
+          findsOneWidget,
+        );
+
+        // Vazgeç
+        await tester.tap(
+          find.byKey(const ValueKey('cart_clear_cancel_button')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(cartCubit.state.isEmpty, isFalse);
+        expect(
+          find.byKey(const ValueKey('cart_clear_confirm_dialog')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(ValueKey('cart_item_card_${testProduct1.id}')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -506,6 +564,86 @@ void main() {
           findsOneWidget,
         );
         expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      '12. DEVAM ET (checkout) butonuna tıklandığında checkout yönlendirmesi tetiklenir',
+      (tester) async {
+        bool checkoutTriggered = false;
+        await cartCubit.addProduct(testProduct1);
+
+        await tester.pumpWidget(
+          createCartWidget(
+            cubit: cartCubit,
+            onCheckoutNavigate: () => checkoutTriggered = true,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const ValueKey('cart_checkout_button')),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const ValueKey('cart_checkout_button')));
+        await tester.pumpAndSettle();
+
+        expect(checkoutTriggered, isTrue);
+      },
+    );
+
+    testWidgets(
+      '13. Ürün kartındaki görsel veya başlığa tıklandığında ürün detayına yönlendirilir',
+      (tester) async {
+        String? tappedProductId;
+        await cartCubit.addProduct(testProduct1);
+
+        await tester.pumpWidget(
+          createCartWidget(
+            cubit: cartCubit,
+            onProductTap: (id) => tappedProductId = id,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(ValueKey('cart_item_image_${testProduct1.id}')),
+        );
+        await tester.pumpAndSettle();
+        expect(tappedProductId, testProduct1.id);
+
+        tappedProductId = null;
+        await tester.tap(
+          find.byKey(ValueKey('cart_item_title_${testProduct1.id}')),
+        );
+        await tester.pumpAndSettle();
+        expect(tappedProductId, testProduct1.id);
+      },
+    );
+
+    testWidgets(
+      '14. Sepette tükenmiş ürün varsa STOKTA YOK uyarısı gösterilir ve adet artırılamaz',
+      (tester) async {
+        // Doğrudan initialCart enjekte edilerek tükenmiş ürün sepette simüle edilir
+        cartCubit.setInitialCartForTesting({testProductOutOfStock.id: 1});
+
+        await tester.pumpWidget(createCartWidget(cubit: cartCubit));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(
+            ValueKey('cart_item_out_of_stock_${testProductOutOfStock.id}'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('STOKTA YOK'), findsOneWidget);
+
+        // Artır butonu tıklandığında adet artmaz
+        await tester.tap(
+          find.byKey(ValueKey('cart_qty_increase_${testProductOutOfStock.id}')),
+        );
+        await tester.pumpAndSettle();
+        expect(cartCubit.state.getQuantity(testProductOutOfStock.id), 1);
       },
     );
   });

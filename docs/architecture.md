@@ -304,6 +304,32 @@ SPARKS iki sütunlu editoryal menüsü, lüks moda dergilerinin editoryal hiyera
   - Kullanıcıya tamamlanmış bir sipariş kaydı bulunmadığı ve sipariş geçmişi için sipariş altyapısının gerektiği net bir dille aktarılır (`HENÜZ BİR SİPARİŞİNİZ YOK`).
 - **Aksiyonlar:** `KATALOĞA DÖN` (`/menu`) ve `SEPETE GİT` (`/cart`) yönlendirmeleri.
 
+---
+
+## 11. Sepet Etkileşimleri, Sipariş Öncesi Kontroller ve Checkout Mimarisi (Aşama 10)
+
+### 11.1. Sepet İyileştirmeleri ve Alışveriş Öncesi Kontroller (`CartScreen`)
+- **Sepeti Temizleme Onay Dialogu:**
+  - "SEPETİ TEMİZLE" eylemi kazara dokunmaları önlemek adına editoryal onay dialogu (`cart_clear_confirm_dialog`) ile korunur.
+  - VAZGEÇ (`cart_clear_cancel_button`) dialogu kapatır; TEMİZLE (`cart_clear_confirm_button`) sepeti kalıcı olarak sıfırlar.
+- **Tükenen Ürün ve Stok Doğrulaması:**
+  - Sepetteki ürün `Product.isOutOfStock == true` olduğunda editoryal `STOKTA YOK` rozeti gösterilir.
+  - Adet artırma butonu (+) devre dışı bırakılır; `CartCubit.incrementQuantity` metodu da repository doğrulaması yaparak tükenen ürünün adedinin artırılmasını engeller.
+- **Tıklanabilir Ürün Kartları:**
+  - Sepetteki ürün görseli ve başlığı üzerinden ilgili ürünün detayına (`/product/:id`) hızlı ve kesintisiz geçiş sağlanır.
+
+### 11.2. Sipariş Özeti ve İnceleme Ekranı (`CheckoutScreen`)
+- **Rota Tanımı:** `/checkout` (`AppRoutes.checkout`), `CartScreen` üzerindeki "DEVAM ET" butonu ile tetiklenir.
+- **Tek Merkezli Durum (Single Source of Truth):**
+  - Fiyatlar ve ürün kalemleri ayrı bir state veya cubit oluşturulmadan doğrudan `CartCubit` üzerinden okunur (`getCartItemViews()`).
+  - Ara toplam, ücretsiz standart kargo (`ÜCRETSİZ`) ve genel toplam `CurrencyFormatter` ile standartlaştırılmış editoryal formatta gösterilir.
+- **Reaktif Senkronizasyon ve Boş Durum:**
+  - Sepet boşaldığında veya ekran doğrudan boş sepetle açıldığında `SEPETİNİZDE ÜRÜN BULUNMUYOR` boş durumu gösterilir ve `SEPETE DÖN` butonu sunulur.
+- **Dürüstlük ve Altyapı Sınırları:**
+  - Sahte ödeme formları, kredi kartı girişleri, uydurma kupon kodları veya sahte sipariş onayları kesinlikle üretilmez.
+  - "ÖNEMLİ BİLGİLENDİRME" kutusu ile SPARKS ödeme ve canlı sipariş altyapısının henüz aktif olmadığı şeffafça ifade edilir.
+  - "SİPARİŞİ TAMAMLA" butonu kullanıcıya ödeme altyapısının geliştirilme aşamasında olduğunu dürüstçe bildirir.
+
 
 
 

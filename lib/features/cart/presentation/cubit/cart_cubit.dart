@@ -100,6 +100,14 @@ class CartCubit extends Cubit<CartState> {
   Future<void> incrementQuantity(String productId) async {
     if (!state.items.containsKey(productId)) return;
 
+    try {
+      final product = await _productRepository.getProductById(productId);
+      if (product != null && product.isOutOfStock) {
+        emit(state.copyWith(errorMessage: 'Tükenen ürünün adedi artırılamaz.'));
+        return;
+      }
+    } catch (_) {}
+
     final updated = Map<String, int>.from(state.items);
     updated[productId] = (updated[productId] ?? 1) + 1;
 

@@ -228,21 +228,39 @@
 
 ---
 
-## Aşama 12 — Login ve Register Tasarımı (KULLANICI ONAYI BEKLENİYOR)
-- **Amaç:** Kullanıcı referans ekran görüntülerini SPARKS editoryal ve monokrom tasarım diline uyarlayarak aşağıdan yukarıya açılan (bottom-sheet / modal animasyonlu) giriş ve kayıt ekranlarını oluşturmak; ana sayfa sağ üstüne giriş bağlantısı eklemek.
-- **Ön Koşullar:** Aşama 11 onayı ve kullanıcının referans ekran görüntülerini iletmesi.
-- **Yapılacak İşler:**
-  - Login ekranı tasarımı (e-posta, şifre, şifremi unuttum, giriş yap butonu, kayıt ol geçişi).
-  - Register ekranı tasarımı (ad soyad, e-posta, şifre, sözleşme onayı, kayıt ol butonu).
-  - Ana sayfanın (Lookbook) sağ üst köşesine editoryal giriş butonu/ikonu.
-  - Ekranların aşağıdan yukarıya yumuşak animasyonla açılması (GoRouter / Page transition).
-- **Oluşturulacak / Değiştirilecek Dosyalar:** `lib/features/auth/presentation/login_screen.dart`, `lib/features/auth/presentation/register_screen.dart`, `lib/features/home/presentation/home_screen.dart`, `lib/app/router/app_router.dart`.
-- **Test Yöntemi:** Widget testleri, form doğrulama testleri.
-- **Tamamlanma Ölçütü:** Giriş ve kayıt ekranları editoryal estetikle açılır ve `AuthCubit` ile tam uyumlu çalışır.
+## Aşama 12 — Login ve Register Tasarımı (TAMAMLANDI)
+- **Amaç:** Kullanıcı referans ekran görüntülerini SPARKS editoryal ve monokrom tasarım diline uyarlayarak aşağıdan yukarıya açılan (vertical slide animasyonlu) giriş ve kayıt ekranlarını oluşturmak; ana sayfa sağ üstüne dinamik giriş butonu eklemek.
+- **Ön Koşullar:** Aşama 11 onayı ve referans görsel incelemesi.
+- **Gerçekleştirilen İşler:**
+  - `LoginScreen` (`lib/features/auth/presentation/login_screen.dart`):
+    - Saf siyah zemin, Playfair Display editoryal başlıklar ("SPARKS", "TEKRAR HOŞ GELDİNİZ", "GİRİŞ YAP").
+    - E-posta (`login_email_input`) ve regex doğrulaması; Şifre (`login_password_input`) ve görünürlük butonu (`login_password_toggle`).
+    - Beni hatırla kutusu (`login_remember_me_checkbox`), şifremi unuttum aksiyonu (`login_forgot_password_button`).
+    - Açıklayıcı Türkçe hata bannerı (`login_error_banner`), giriş butonu (`login_submit_button`), kayıt ekranına geçiş (`login_to_register_button`) ve kapatma (`login_close_button`).
+  - `RegisterScreen` (`lib/features/auth/presentation/register_screen.dart`):
+    - Editoryal başlıklar ("SPARKS", "HESAP OLUŞTUR") ve karşılayıcı editoryal metin.
+    - Ad Soyad (`register_name_input`), E-posta (`register_email_input`), Şifre (`register_password_input`), Şifre Tekrar (`register_password_repeat_input`).
+    - Şifre görünürlük butonları (`register_password_toggle`, `register_password_repeat_toggle`).
+    - Şifre eşleşme, minimum 6 karakter ve ad soyad uzunluk validasyonları.
+    - Kullanım Koşulları ve Gizlilik Politikası onay kutusu (`register_terms_checkbox`).
+    - Kayıt butonu (`register_submit_button`), hata bannerı (`register_error_banner`), giriş ekranına dönüş linki (`register_to_login_button`) ve kapatma (`register_close_button`).
+  - Ana Sayfa Giriş Butonu (`HomeScreen`):
+    - Ekranın sağ üst köşesinde editoryal `GİRİŞ YAP` aksiyon butonu (`home_login_button`).
+    - `BlocBuilder<AuthCubit, AuthState>` ile dinlenir; oturum açıkken gizlenir (`SizedBox.shrink()`).
+  - Rota ve Geçiş Animasyonu (`app_router.dart`):
+    - `AppRoutes.login` (`/login`) ve `AppRoutes.register` (`/register`) rotaları.
+    - `CustomTransitionPage` ve `SlideTransition` ile aşağıdan yukarıya editoryal dikey kayma animasyonu (`Offset(0.0, 1.0) -> Offset.zero`, `Curves.easeOutCubic`).
+  - Testler:
+    - `test/features/auth/login_screen_test.dart` (8 widget testi).
+    - `test/features/auth/register_screen_test.dart` (9 widget testi).
+    - Toplam test sayısı 169'a yükseltildi ve tümü başarıyla tamamlandı.
+- **Oluşturulan / Değiştirilen Dosyalar:** `lib/features/auth/presentation/login_screen.dart`, `lib/features/auth/presentation/register_screen.dart`, `lib/features/home/presentation/home_screen.dart`, `lib/app/router/app_router.dart`, `test/features/auth/*`, `docs/*`.
+- **Test Yöntemi & Sonucu:** `dart analyze` (0 sorun), `flutter test` (169 testin 169'u başarılı), `flutter build web` doğrulaması.
+- **Tamamlanma Ölçütü:** Giriş ve kayıt ekranları monokromatik SPARKS estetiğiyle aşağıdan yukarıya açılır; form doğrulamaları ve hata yönetimi kusursuz çalışır; `AuthCubit` ile tam uyumludur; tüm testler yeşildir.
 
 ---
 
-## Aşama 13 — Oturum ve Uygulama Entegrasyonu (BEKLEMEDE)
+## Aşama 13 — Oturum ve Uygulama Entegrasyonu (KULLANICI ONAYI BEKLENİYOR)
 - **Amaç:** Kayıt sonrası otomatik giriş, uygulama yeniden açıldığında oturumun korunması, çıkış yapma ve Hesabım ekranının gerçek kullanıcı durumuna uyarlanması. Mevcut favori ve sepet işleyişini bozmadan entegre etmek.
 - **Ön Koşullar:** Aşama 12 onayı.
 - **Yapılacak İşler:**

@@ -12,6 +12,7 @@ import 'package:sparks/features/catalog/data/datasources/product_local_data_sour
 import 'package:sparks/features/catalog/data/repositories/product_repository_impl.dart';
 import 'package:sparks/features/catalog/domain/entities/product.dart';
 import 'package:sparks/features/catalog/domain/repositories/product_repository.dart';
+import 'package:sparks/core/widgets/sparks_image.dart';
 import 'package:sparks/features/favorites/presentation/manager/favorites_manager.dart';
 
 /// SPARKS Ürün Detay Sayfası (ProductDetailScreen).
@@ -336,36 +337,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             },
             itemBuilder: (context, index) {
               final imageUrl = product.images[index];
-              return Container(
-                color: AppColors.editorialAnthracite,
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, progress) {
-                    if (progress == null) return child;
-                    return const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.primaryText,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: AppColors.editorialAnthracite,
-                    alignment: Alignment.center,
-                    child: const Icon(
-                      Icons.broken_image_outlined,
-                      color: AppColors.secondaryText,
-                      size: 40,
-                    ),
-                  ),
-                ),
+              return SparksImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
               );
             },
           ),

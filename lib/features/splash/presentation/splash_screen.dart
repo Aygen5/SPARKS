@@ -8,6 +8,7 @@ import 'package:sparks/app/theme/app_spacing.dart';
 import 'package:sparks/app/theme/app_text_styles.dart';
 import 'package:sparks/core/constants/app_constants.dart';
 import 'package:sparks/core/constants/app_images.dart';
+import 'package:sparks/core/widgets/sparks_image.dart';
 
 /// SPARKS Tam Ekran Editoryal Açılış Ekranı (Splash Screen).
 /// Zara yüksek moda estetiğinden ilham alan tam ekran fotoğraf,
@@ -193,45 +194,24 @@ class _SplashBackground extends StatelessWidget {
               child: child,
             );
           },
-          child: Image.network(
-            AppImages.splashBackground,
+          child: SparksImage(
+            imageUrl: AppImages.splashBackground,
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Container(
-                color: AppColors.editorialBrown.withValues(alpha: 0.4),
-                child: const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryText,
-                      ),
-                    ),
-                  ),
+            fallbackWidget: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.editorialBrown,
+                    AppColors.editorialAnthracite,
+                    AppColors.shoppingBackground,
+                  ],
                 ),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              // Görsel ağ hatasında zarif editoryal degrade fallback'i
-              return Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.editorialBrown,
-                      AppColors.editorialAnthracite,
-                      AppColors.shoppingBackground,
-                    ],
-                  ),
-                ),
-              );
-            },
+              ),
+            ),
           ),
         ),
 
